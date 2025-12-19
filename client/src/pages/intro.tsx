@@ -244,13 +244,15 @@ export default function IntroExperience() {
       )}
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+        <>
+          {showModal && (
+            <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
             <motion.img
               src={logoTransparent}
               alt=""
@@ -296,8 +298,9 @@ export default function IntroExperience() {
                 ease: "linear",
               }}
             />
-          </motion.div>
-        </div>
+            </motion.div>
+          </div>
+        )}
         <DialogContent className="sm:max-w-lg border-primary/30 z-50">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-lg">
             {[...Array(5)].map((_, i) => (
@@ -429,6 +432,7 @@ export default function IntroExperience() {
             </motion.div>
           )}
         </DialogContent>
+        </>
       </Dialog>
     </div>
   );
