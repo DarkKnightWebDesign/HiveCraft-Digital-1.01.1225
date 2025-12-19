@@ -204,18 +204,19 @@ export default function IntroExperience() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
+      <div className="fixed inset-0 bg-black z-0" />
       <video
         ref={videoRef}
         autoPlay
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-contain z-0"
+        className="fixed inset-0 w-full h-full object-contain z-10"
         data-testid="video-intro"
       >
         <source src={introVideo} type="video/mp4" />
       </video>
 
-      <AnimatedBackground />
+      {videoEnded && !isReplayMode && <AnimatedBackground />}
 
       {videoEnded && (
         <motion.div
@@ -252,7 +253,7 @@ export default function IntroExperience() {
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <>
-          {showModal && (
+          {showModal && videoEnded && (
             <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
               <motion.div
                 className="relative"
