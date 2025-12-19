@@ -75,7 +75,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border p-4">
             <Link href="/" data-testid="link-portal-logo">
-              <img src={logoTransparent} alt="HiveCraft Digital" className="h-10 w-auto" />
+              <img src={logoTransparent} alt="HiveCraft Digital" className="h-12 w-auto" />
             </Link>
           </SidebarHeader>
           <SidebarContent>

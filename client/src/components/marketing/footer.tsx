@@ -31,7 +31,7 @@ export function Footer() {
               <img
                 src={logoTransparent}
                 alt="HiveCraft Digital"
-                className="h-14 w-auto mb-6"
+                className="h-16 w-auto mb-6"
               />
             </Link>
             <p className="text-muted-foreground text-sm max-w-sm mb-6">

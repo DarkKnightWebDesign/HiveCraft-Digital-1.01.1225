@@ -44,7 +44,7 @@ export function Navbar() {
             <img
               src={logoTransparent}
               alt="HiveCraft Digital"
-              className="h-14 lg:h-16 w-auto"
+              className="h-16 lg:h-20 w-auto"
             />
           </Link>
 
