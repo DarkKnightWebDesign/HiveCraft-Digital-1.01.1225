@@ -418,14 +418,14 @@ export default function IntroExperience() {
               </motion.div>
               <p className="text-lg font-medium">You're in!</p>
               <p className="text-muted-foreground mt-2">Check your inbox soon.</p>
-              <Button
-                variant="outline"
-                className="mt-6"
-                onClick={() => setShowModal(false)}
-                data-testid="button-close-modal"
-              >
-                Close
-              </Button>
+              <Link href="/home">
+                <Button
+                  className="mt-6"
+                  data-testid="button-explore-hive"
+                >
+                  EXPLORE THE HIVE
+                </Button>
+              </Link>
             </motion.div>
           )}
         </DialogContent>
