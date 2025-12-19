@@ -39,12 +39,12 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24 lg:h-28">
+        <div className="flex items-center justify-between h-40 lg:h-48">
           <Link href="/" data-testid="link-logo">
             <img
               src={logoTransparent}
               alt="HiveCraft Digital"
-              className="h-20 lg:h-24 w-auto"
+              className="h-36 lg:h-44 w-auto"
             />
           </Link>
 
