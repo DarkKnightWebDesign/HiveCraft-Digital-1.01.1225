@@ -9,6 +9,7 @@ import {
   invoices,
   memberRoles,
   teamAssignments,
+  subscriptions,
   type Project,
   type InsertProject,
   type Milestone,
@@ -29,6 +30,8 @@ import {
   type InsertMemberRole,
   type TeamAssignment,
   type InsertTeamAssignment,
+  type Subscription,
+  type InsertSubscription,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -84,6 +87,9 @@ export interface IStorage {
   getTeamByProject(projectId: string): Promise<TeamAssignment[]>;
   assignTeamMember(data: InsertTeamAssignment): Promise<TeamAssignment>;
   removeTeamMember(id: string): Promise<void>;
+  
+  // Subscriptions
+  createSubscription(data: InsertSubscription): Promise<Subscription>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -251,6 +257,12 @@ export class DatabaseStorage implements IStorage {
 
   async removeTeamMember(id: string): Promise<void> {
     await db.delete(teamAssignments).where(eq(teamAssignments.id, id));
+  }
+
+  // Subscriptions
+  async createSubscription(data: InsertSubscription): Promise<Subscription> {
+    const [subscription] = await db.insert(subscriptions).values(data).returning();
+    return subscription;
   }
 }
 

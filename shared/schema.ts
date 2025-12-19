@@ -138,6 +138,15 @@ export const teamAssignments = pgTable("team_assignments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Subscriptions (for HIVE SITE interest)
+export const subscriptions = pgTable("subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const projectsRelations = relations(projects, ({ many }) => ({
   milestones: many(milestones),
@@ -195,6 +204,7 @@ export const insertFileSchema = createInsertSchema(files).omit({ id: true, creat
 export const insertActivityLogSchema = createInsertSchema(activityLog).omit({ id: true, createdAt: true });
 export const insertInvoiceSchema = createInsertSchema(invoices).omit({ id: true, createdAt: true });
 export const insertTeamAssignmentSchema = createInsertSchema(teamAssignments).omit({ id: true, createdAt: true });
+export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({ id: true, createdAt: true });
 
 // Types
 export type MemberRole = typeof memberRoles.$inferSelect;
@@ -217,3 +227,5 @@ export type Invoice = typeof invoices.$inferSelect;
 export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
 export type TeamAssignment = typeof teamAssignments.$inferSelect;
 export type InsertTeamAssignment = z.infer<typeof insertTeamAssignmentSchema>;
+export type Subscription = typeof subscriptions.$inferSelect;
+export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
