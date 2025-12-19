@@ -103,7 +103,7 @@ export function StaffLayout({ children }: StaffLayoutProps) {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border p-4">
             <div className="flex items-center gap-2">
-              <Link href="/" data-testid="link-admin-logo">
+              <Link href="/home" data-testid="link-admin-logo">
                 <img src={logoTransparent} alt="HiveCraft Digital" className="h-12 w-auto" />
               </Link>
               <Badge variant="secondary" className="text-xs">Staff</Badge>

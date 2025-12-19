@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const navLinks = [
-  { href: "/", label: "Home" },
+  { href: "/home", label: "Home" },
   { href: "/services", label: "Services" },
   { href: "/process", label: "Process" },
   { href: "/pricing", label: "Pricing" },
@@ -40,7 +40,7 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-56 lg:h-64">
-          <Link href="/" data-testid="link-logo">
+          <Link href="/home" data-testid="link-logo">
             <img
               src={logoTransparent}
               alt="HiveCraft Digital"

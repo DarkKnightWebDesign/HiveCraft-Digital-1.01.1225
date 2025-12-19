@@ -74,7 +74,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       <div className="flex h-screen w-full">
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border p-4">
-            <Link href="/" data-testid="link-portal-logo">
+            <Link href="/home" data-testid="link-portal-logo">
               <img src={logoTransparent} alt="HiveCraft Digital" className="h-12 w-auto" />
             </Link>
           </SidebarHeader>

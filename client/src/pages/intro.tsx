@@ -1,0 +1,380 @@
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
+import introVideo from "@assets/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4";
+
+const subscribeSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().optional(),
+});
+
+type SubscribeForm = z.infer<typeof subscribeSchema>;
+
+function FloatingHexagon({ delay, duration, startX, startY }: { delay: number; duration: number; startX: number; startY: number }) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      initial={{ x: startX, y: startY, opacity: 0, scale: 0.5, rotate: 0 }}
+      animate={{
+        x: [startX, startX + 50, startX - 30, startX + 20, startX],
+        y: [startY, startY - 80, startY - 160, startY - 240, startY - 320],
+        opacity: [0, 0.6, 0.8, 0.6, 0],
+        scale: [0.5, 0.8, 1, 0.8, 0.5],
+        rotate: [0, 30, -20, 45, 0],
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <svg width="60" height="70" viewBox="0 0 60 70" className="text-primary/30">
+        <polygon
+          points="30,2 55,18 55,52 30,68 5,52 5,18"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <polygon
+          points="30,10 48,22 48,48 30,60 12,48 12,22"
+          fill="currentColor"
+          opacity="0.2"
+        />
+      </svg>
+    </motion.div>
+  );
+}
+
+function DigitalBee({ delay, path }: { delay: number; path: { x: number[]; y: number[] } }) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      initial={{ x: path.x[0], y: path.y[0], opacity: 0 }}
+      animate={{
+        x: path.x,
+        y: path.y,
+        opacity: [0, 1, 1, 1, 0],
+      }}
+      transition={{
+        duration: 12,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <motion.div
+        animate={{ rotate: [0, 5, -5, 3, -3, 0] }}
+        transition={{ duration: 0.5, repeat: Infinity }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" className="text-primary">
+          <ellipse cx="12" cy="12" rx="6" ry="4" fill="currentColor" />
+          <ellipse cx="12" cy="12" rx="4" ry="2.5" fill="#000" opacity="0.3" />
+          <circle cx="8" cy="12" r="2" fill="currentColor" />
+          <motion.ellipse
+            cx="14"
+            cy="8"
+            rx="4"
+            ry="2"
+            fill="currentColor"
+            opacity="0.4"
+            animate={{ ry: [2, 3, 2], rx: [4, 5, 4] }}
+            transition={{ duration: 0.1, repeat: Infinity }}
+          />
+          <motion.ellipse
+            cx="14"
+            cy="16"
+            rx="4"
+            ry="2"
+            fill="currentColor"
+            opacity="0.4"
+            animate={{ ry: [2, 3, 2], rx: [4, 5, 4] }}
+            transition={{ duration: 0.1, repeat: Infinity, delay: 0.05 }}
+          />
+        </svg>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function AnimatedBackground() {
+  const hexagons = [
+    { delay: 0, duration: 8, startX: 100, startY: 600 },
+    { delay: 1.5, duration: 10, startX: 300, startY: 700 },
+    { delay: 3, duration: 9, startX: 500, startY: 650 },
+    { delay: 0.5, duration: 11, startX: 700, startY: 720 },
+    { delay: 2, duration: 8.5, startX: 900, startY: 680 },
+    { delay: 4, duration: 10, startX: 1100, startY: 750 },
+    { delay: 1, duration: 9.5, startX: 200, startY: 800 },
+    { delay: 2.5, duration: 8, startX: 600, startY: 780 },
+    { delay: 3.5, duration: 11, startX: 1000, startY: 700 },
+    { delay: 0.8, duration: 9, startX: 400, startY: 850 },
+  ];
+
+  const beePaths = [
+    { delay: 0, path: { x: [50, 200, 400, 350, 500, 300, 50], y: [300, 250, 280, 200, 150, 100, 50] } },
+    { delay: 3, path: { x: [800, 600, 700, 500, 400, 350, 200], y: [400, 350, 300, 320, 250, 180, 100] } },
+    { delay: 6, path: { x: [1200, 1000, 800, 900, 700, 600, 500], y: [500, 400, 380, 300, 250, 200, 120] } },
+    { delay: 2, path: { x: [300, 450, 600, 550, 700, 800, 1000], y: [600, 500, 450, 380, 320, 250, 150] } },
+  ];
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-10">
+      {hexagons.map((hex, i) => (
+        <FloatingHexagon key={i} {...hex} />
+      ))}
+      {beePaths.map((bee, i) => (
+        <DigitalBee key={i} {...bee} />
+      ))}
+    </div>
+  );
+}
+
+export default function IntroExperience() {
+  const [showModal, setShowModal] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
+
+  const form = useForm<SubscribeForm>({
+    resolver: zodResolver(subscribeSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+    },
+  });
+
+  const subscribeMutation = useMutation({
+    mutationFn: async (data: SubscribeForm) => {
+      const response = await apiRequest("POST", "/api/subscriptions", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      setSubmitted(true);
+      toast({
+        title: "Success!",
+        description: "We'll send you details about HIVE SITE soon.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: SubscribeForm) => {
+    subscribeMutation.mutate(data);
+  };
+
+  return (
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      <AnimatedBackground />
+      
+      <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="w-full max-w-4xl"
+        >
+          <div className="relative rounded-lg overflow-hidden shadow-2xl border border-primary/20">
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full aspect-video object-cover"
+              data-testid="video-intro"
+            >
+              <source src={introVideo} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-8 text-center"
+        >
+          <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            <span className="text-gold-gradient">HIVE SITE</span>
+          </h1>
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
+            Your complete website solution. Professional design, built to perform.
+            <br />
+            <span className="text-primary font-semibold">One-time payment of $500</span>
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button
+              size="lg"
+              onClick={() => setShowModal(true)}
+              className="gap-2 min-w-[200px]"
+              data-testid="button-subscribe"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                Get Started
+              </motion.span>
+            </Button>
+            <Link href="/home">
+              <Button size="lg" variant="outline" data-testid="button-explore">
+                Explore HiveCraft
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="mt-12 text-sm text-muted-foreground"
+        >
+          Powered by HiveCraft Digital
+        </motion.p>
+      </div>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-md border-primary/30">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-lg">
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute text-primary/10"
+                style={{ left: `${i * 25}%`, top: `${(i % 3) * 30}%` }}
+                animate={{
+                  y: [-10, 10, -10],
+                  rotate: [0, 10, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  delay: i * 0.5,
+                  repeat: Infinity,
+                }}
+              >
+                <svg width="40" height="46" viewBox="0 0 60 70">
+                  <polygon
+                    points="30,2 55,18 55,52 30,68 5,52 5,18"
+                    fill="currentColor"
+                  />
+                </svg>
+              </motion.div>
+            ))}
+          </div>
+          
+          <DialogHeader className="relative z-10">
+            <DialogTitle className="text-2xl font-heading">
+              <span className="text-gold-gradient">Join the Hive</span>
+            </DialogTitle>
+            <DialogDescription>
+              {submitted
+                ? "Thank you for your interest! We'll email you soon with all the details about HIVE SITE."
+                : "Enter your details and we'll send you information about getting HIVE SITE for just $500."}
+            </DialogDescription>
+          </DialogHeader>
+
+          {!submitted ? (
+            <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10 space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Your name"
+                  {...form.register("name")}
+                  data-testid="input-name"
+                />
+                {form.formState.errors.name && (
+                  <p className="text-sm text-destructive">{form.formState.errors.name.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  {...form.register("email")}
+                  data-testid="input-email"
+                />
+                {form.formState.errors.email && (
+                  <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone (optional)</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="(555) 123-4567"
+                  {...form.register("phone")}
+                  data-testid="input-phone"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={subscribeMutation.isPending}
+                data-testid="button-submit"
+              >
+                {subscribeMutation.isPending ? "Submitting..." : "Get HIVE SITE Info"}
+              </Button>
+            </form>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative z-10 text-center py-8"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 0.5 }}
+                className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center"
+              >
+                <svg width="40" height="46" viewBox="0 0 60 70" className="text-primary">
+                  <polygon
+                    points="30,2 55,18 55,52 30,68 5,52 5,18"
+                    fill="currentColor"
+                  />
+                </svg>
+              </motion.div>
+              <p className="text-lg font-medium">You're in!</p>
+              <p className="text-muted-foreground mt-2">Check your inbox soon.</p>
+              <Button
+                variant="outline"
+                className="mt-6"
+                onClick={() => setShowModal(false)}
+                data-testid="button-close-modal"
+              >
+                Close
+              </Button>
+            </motion.div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
