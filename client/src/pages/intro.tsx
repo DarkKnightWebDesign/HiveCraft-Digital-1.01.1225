@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -144,6 +144,7 @@ function AnimatedBackground() {
 export default function IntroExperience() {
   const [showModal, setShowModal] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
@@ -181,48 +182,40 @@ export default function IntroExperience() {
     subscribeMutation.mutate(data);
   };
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const handleVideoEnd = () => {
+        setVideoEnded(true);
+        setShowModal(true);
+      };
+      video.addEventListener("ended", handleVideoEnd);
+      return () => video.removeEventListener("ended", handleVideoEnd);
+    }
+  }, []);
+
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover z-0"
+        data-testid="video-intro"
+      >
+        <source src={introVideo} type="video/mp4" />
+      </video>
+
       <AnimatedBackground />
-      
-      <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="w-full max-w-4xl"
-        >
-          <div className="relative rounded-lg overflow-hidden shadow-2xl border border-primary/20">
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full aspect-video object-cover"
-              data-testid="video-intro"
-            >
-              <source src={introVideo} type="video/mp4" />
-            </video>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          </div>
-        </motion.div>
 
+      {videoEnded && (
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="fixed bottom-8 left-0 right-0 z-30 flex flex-col items-center gap-4"
         >
-          <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-gold-gradient">HIVE SITE</span>
-          </h1>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
-            Your complete website solution. Professional design, built to perform.
-            <br />
-            <span className="text-primary font-semibold">One-time payment of $500</span>
-          </p>
-
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               size="lg"
@@ -243,20 +236,14 @@ export default function IntroExperience() {
               </Button>
             </Link>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Powered by HiveCraft Digital
+          </p>
         </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-12 text-sm text-muted-foreground"
-        >
-          Powered by HiveCraft Digital
-        </motion.p>
-      </div>
+      )}
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="sm:max-w-md border-primary/30">
+        <DialogContent className="sm:max-w-lg border-primary/30">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-lg">
             {[...Array(5)].map((_, i) => (
               <motion.div
@@ -284,13 +271,26 @@ export default function IntroExperience() {
           </div>
           
           <DialogHeader className="relative z-10">
-            <DialogTitle className="text-2xl font-heading">
-              <span className="text-gold-gradient">Join the Hive</span>
+            <DialogTitle className="text-2xl font-heading text-center">
+              <span className="text-gold-gradient">Subscribe Now</span>
             </DialogTitle>
-            <DialogDescription>
-              {submitted
-                ? "Thank you for your interest! We'll email you soon with all the details about HIVE SITE."
-                : "Enter your details and we'll send you information about getting HIVE SITE for just $500."}
+            <DialogDescription className="text-center space-y-2">
+              {submitted ? (
+                "Thank you for your interest! We'll email you soon with all the details about HIVE SITE."
+              ) : (
+                <>
+                  <span className="block text-lg">
+                    Get started with your <span className="font-semibold text-primary">HIVE SITE</span>
+                  </span>
+                  <span className="block text-2xl font-bold mt-2">
+                    <span className="text-muted-foreground line-through mr-3">$1,500</span>
+                    <span className="text-primary">ONE-TIME Payment of $500</span>
+                  </span>
+                  <span className="block text-sm text-muted-foreground mt-1">
+                    Limited time offer - Save $1,000!
+                  </span>
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
 
@@ -340,7 +340,7 @@ export default function IntroExperience() {
                 disabled={subscribeMutation.isPending}
                 data-testid="button-submit"
               >
-                {subscribeMutation.isPending ? "Submitting..." : "Get HIVE SITE Info"}
+                {subscribeMutation.isPending ? "Submitting..." : "Claim Your HIVE SITE - $500"}
               </Button>
             </form>
           ) : (
