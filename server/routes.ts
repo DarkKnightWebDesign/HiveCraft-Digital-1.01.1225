@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, registerAuthRoutes } from "./replit_integrations/auth";
-import { insertProjectSchema, insertMilestoneSchema, insertMessageSchema, insertPreviewSchema, insertFileSchema } from "@shared/schema";
+import { insertProjectSchema, insertMilestoneSchema, insertMessageSchema, insertPreviewSchema, insertFileSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(
@@ -425,6 +425,23 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating preview:", error);
       res.status(500).json({ message: "Failed to update preview" });
+    }
+  });
+
+  // PUBLIC ROUTES (no auth required)
+  
+  // Create subscription (for HIVE SITE interest)
+  app.post("/api/subscriptions", async (req, res) => {
+    try {
+      const validatedData = insertSubscriptionSchema.parse(req.body);
+      const subscription = await storage.createSubscription(validatedData);
+      res.status(201).json(subscription);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ message: "Failed to create subscription" });
     }
   });
 
