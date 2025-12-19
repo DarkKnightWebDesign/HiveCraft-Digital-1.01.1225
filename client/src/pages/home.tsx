@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MarketingLayout } from "@/components/marketing/layout";
 import { ArrowRight, Monitor, ShoppingCart, Code2, Globe, CheckCircle2, Zap, Shield, Users } from "lucide-react";
+import heroImage from "@assets/7e3fa3f6-18f5-4b40-b340-4a7dfffc4bb6_1766119744896.png";
 
 const services = [
   {
@@ -51,11 +52,11 @@ export default function Home() {
   return (
     <MarketingLayout>
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background/80" />
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
-        </div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-background" />
         
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32 text-center">
           <Badge variant="outline" className="mb-6 px-4 py-1.5 text-xs uppercase tracking-wider" data-testid="badge-hero">
@@ -113,7 +114,7 @@ export default function Home() {
               <Link key={index} href={service.href}>
                 <Card className="h-full hover-elevate cursor-pointer group" data-testid={`card-service-${index}`}>
                   <CardContent className="p-6">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <div className="w-14 h-16 honeycomb-icon mb-4 group-hover:bg-primary/20 transition-colors">
                       <service.icon className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="font-heading font-semibold text-lg mb-2">{service.title}</h3>
@@ -142,8 +143,8 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
               {processSteps.map((step, index) => (
                 <div key={index} className="relative text-center" data-testid={`process-step-${index}`}>
-                  <div className="relative z-10 w-16 h-16 mx-auto rounded-full bg-card border-2 border-primary flex items-center justify-center mb-4 gold-glow">
-                    <span className="font-heading font-bold text-primary">{index + 1}</span>
+                  <div className="relative z-10 w-16 h-[72px] mx-auto honeycomb-step mb-4">
+                    <span className="font-heading font-bold text-primary text-lg">{index + 1}</span>
                   </div>
                   <h3 className="font-heading font-semibold mb-2">{step.name}</h3>
                   <p className="text-sm text-muted-foreground">{step.description}</p>
@@ -173,7 +174,7 @@ export default function Home() {
                   { icon: CheckCircle2, text: "Transparent process with approvals" },
                 ].map((item, index) => (
                   <li key={index} className="flex items-center gap-3" data-testid={`feature-${index}`}>
-                    <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                    <div className="w-10 h-12 honeycomb-icon">
                       <item.icon className="w-4 h-4 text-primary" />
                     </div>
                     <span>{item.text}</span>
@@ -181,11 +182,11 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div className="relative">
-              <div className="aspect-square rounded-lg bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/20 flex items-center justify-center gold-glow">
+            <div className="relative flex items-center justify-center">
+              <div className="w-64 h-72 honeycomb-stat flex items-center justify-center gold-glow">
                 <div className="text-center">
                   <div className="font-heading font-bold text-6xl text-primary mb-2">98%</div>
-                  <div className="text-muted-foreground">Client Satisfaction Rate</div>
+                  <div className="text-muted-foreground text-sm">Client Satisfaction Rate</div>
                 </div>
               </div>
             </div>
