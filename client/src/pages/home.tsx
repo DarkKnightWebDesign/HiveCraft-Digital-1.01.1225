@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MarketingLayout } from "@/components/marketing/layout";
 import { ArrowRight, Monitor, ShoppingCart, Code2, Globe, CheckCircle2, Zap, Shield, Users } from "lucide-react";
-import heroVideo from "@assets/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4";
+import heroVideo from "@assets/Create_a_seamless,_loopable_animated_video_based_on_the_refere_1766172802666.mp4";
 
 const services = [
   {
