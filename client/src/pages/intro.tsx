@@ -147,11 +147,19 @@ export default function IntroExperience() {
   const [showModal, setShowModal] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
+  const [modalClosed, setModalClosed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const searchString = useSearch();
   const isReplayMode = searchString.includes("replay=true");
+  
+  const handleModalClose = (open: boolean) => {
+    setShowModal(open);
+    if (!open && videoEnded) {
+      setModalClosed(true);
+    }
+  };
 
   const form = useForm<SubscribeForm>({
     resolver: zodResolver(subscribeSchema),
@@ -232,6 +240,21 @@ export default function IntroExperience() {
 
       {videoEnded && !isReplayMode && <AnimatedBackground />}
 
+      {modalClosed && !isReplayMode && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="fixed inset-0 z-20 flex items-center justify-center pointer-events-none"
+        >
+          <img
+            src={logoTransparent}
+            alt="HiveCraft Digital"
+            className="w-[60%] max-w-[600px] opacity-30"
+          />
+        </motion.div>
+      )}
+
       {videoEnded && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -265,7 +288,7 @@ export default function IntroExperience() {
         </motion.div>
       )}
 
-      <Dialog open={showModal} onOpenChange={setShowModal}>
+      <Dialog open={showModal} onOpenChange={handleModalClose}>
         <>
           {showModal && videoEnded && (
             <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
