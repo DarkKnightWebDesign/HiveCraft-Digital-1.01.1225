@@ -23,7 +23,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LayoutDashboard, FolderKanban, Users, MessageSquare, FileText, Settings, LogOut, User, ChevronUp, Activity, Receipt } from "lucide-react";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 import type { MemberRole } from "@shared/schema";
 
 const staffNavItems = [

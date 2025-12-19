@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const footerLinks = {
   services: [

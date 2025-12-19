@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { Menu, X } from "lucide-react";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const navLinks = [
   { href: "/", label: "Home" },

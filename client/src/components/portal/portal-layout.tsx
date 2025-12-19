@@ -21,7 +21,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LayoutDashboard, FolderKanban, MessageSquare, FileText, Receipt, LogOut, User, ChevronUp } from "lucide-react";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const clientNavItems = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard },
