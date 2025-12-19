@@ -247,70 +247,70 @@ export default function IntroExperience() {
         <>
           {showModal && (
             <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-            <motion.img
-              src={logoTransparent}
-              alt=""
-              className="w-[150%] max-w-[600px] sm:max-w-[700px]"
-              animate={{
-                opacity: [0.2, 0.35, 0.15, 0.4, 0.2, 0.3, 0.25, 0.2],
-                x: [0, -2, 3, -1, 2, 0, -3, 0],
-                y: [0, 1, -2, 0, 1, -1, 2, 0],
-                scale: [1, 1.002, 0.998, 1.001, 0.999, 1, 1.003, 1],
-                filter: [
-                  "hue-rotate(0deg) brightness(1)",
-                  "hue-rotate(10deg) brightness(1.2)",
-                  "hue-rotate(-5deg) brightness(0.9)",
-                  "hue-rotate(0deg) brightness(1.1)",
-                  "hue-rotate(15deg) brightness(0.95)",
-                  "hue-rotate(-10deg) brightness(1.15)",
-                  "hue-rotate(5deg) brightness(1)",
-                  "hue-rotate(0deg) brightness(1)",
-                ],
-              }}
-              transition={{
-                duration: 0.8,
-                repeat: Infinity,
-                repeatType: "loop",
-                ease: "linear",
-                times: [0, 0.1, 0.2, 0.35, 0.5, 0.65, 0.8, 1],
-              }}
-            />
-            <motion.img
-              src={logoTransparent}
-              alt=""
-              className="absolute inset-0 w-[150%] max-w-[600px] sm:max-w-[700px] mix-blend-screen"
-              style={{ filter: "hue-rotate(180deg)" }}
-              animate={{
-                opacity: [0, 0.15, 0, 0.1, 0, 0.2, 0],
-                x: [0, 4, -2, 5, -3, 2, 0],
-                y: [0, -2, 3, -1, 2, -3, 0],
-              }}
-              transition={{
-                duration: 0.5,
-                repeat: Infinity,
-                repeatType: "loop",
-                ease: "linear",
-              }}
-            />
-            </motion.div>
-          </div>
-        )}
-        <DialogContent className="sm:max-w-lg border-primary/30 z-50">
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.img
+                  src={logoTransparent}
+                  alt=""
+                  className="w-[280px] sm:w-[350px] md:w-[420px] lg:w-[500px]"
+                  animate={{
+                    opacity: [0.4, 0.55, 0.35, 0.6, 0.4, 0.5, 0.45, 0.4],
+                    x: [0, -2, 3, -1, 2, 0, -3, 0],
+                    y: [0, 1, -2, 0, 1, -1, 2, 0],
+                    scale: [1, 1.002, 0.998, 1.001, 0.999, 1, 1.003, 1],
+                    filter: [
+                      "hue-rotate(0deg) brightness(1)",
+                      "hue-rotate(10deg) brightness(1.2)",
+                      "hue-rotate(-5deg) brightness(0.9)",
+                      "hue-rotate(0deg) brightness(1.1)",
+                      "hue-rotate(15deg) brightness(0.95)",
+                      "hue-rotate(-10deg) brightness(1.15)",
+                      "hue-rotate(5deg) brightness(1)",
+                      "hue-rotate(0deg) brightness(1)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    ease: "linear",
+                    times: [0, 0.1, 0.2, 0.35, 0.5, 0.65, 0.8, 1],
+                  }}
+                />
+                <motion.img
+                  src={logoTransparent}
+                  alt=""
+                  className="absolute inset-0 w-[280px] sm:w-[350px] md:w-[420px] lg:w-[500px] mix-blend-screen"
+                  style={{ filter: "hue-rotate(180deg)" }}
+                  animate={{
+                    opacity: [0, 0.2, 0, 0.15, 0, 0.25, 0],
+                    x: [0, 4, -2, 5, -3, 2, 0],
+                    y: [0, -2, 3, -1, 2, -3, 0],
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    ease: "linear",
+                  }}
+                />
+              </motion.div>
+            </div>
+          )}
+        <DialogContent className="sm:max-w-md border-primary/30 z-50 p-4 sm:p-6">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-lg">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute text-primary/10"
-                style={{ left: `${i * 25}%`, top: `${(i % 3) * 30}%` }}
+                style={{ left: `${i * 35}%`, top: `${(i % 2) * 40 + 20}%` }}
                 animate={{
-                  y: [-10, 10, -10],
-                  rotate: [0, 10, 0],
+                  y: [-8, 8, -8],
+                  rotate: [0, 8, 0],
                 }}
                 transition={{
                   duration: 4,
@@ -318,7 +318,7 @@ export default function IntroExperience() {
                   repeat: Infinity,
                 }}
               >
-                <svg width="40" height="46" viewBox="0 0 60 70">
+                <svg width="30" height="35" viewBox="0 0 60 70">
                   <polygon
                     points="30,2 55,18 55,52 30,68 5,52 5,18"
                     fill="currentColor"
@@ -328,24 +328,24 @@ export default function IntroExperience() {
             ))}
           </div>
           
-          <DialogHeader className="relative z-10">
-            <DialogTitle className="text-2xl font-heading text-center">
+          <DialogHeader className="relative z-10 space-y-1">
+            <DialogTitle className="text-xl sm:text-2xl font-heading text-center">
               <span className="text-gold-gradient">Subscribe Now</span>
             </DialogTitle>
-            <DialogDescription className="text-center space-y-2">
+            <DialogDescription className="text-center space-y-1">
               {submitted ? (
-                "Thank you for your interest! We'll email you soon with all the details about HIVE SITE."
+                "Thank you! We'll email you soon with all the details about HIVE SITE."
               ) : (
                 <>
-                  <span className="block text-lg">
+                  <span className="block text-base sm:text-lg">
                     Get started with your <span className="font-semibold text-primary">HIVE SITE</span>
                   </span>
-                  <span className="block text-2xl font-bold mt-2">
-                    <span className="text-muted-foreground line-through mr-3">$1,500</span>
-                    <span className="text-primary">ONE-TIME Payment of $500</span>
+                  <span className="block text-xl sm:text-2xl font-bold mt-1">
+                    <span className="text-muted-foreground line-through mr-2">$1,500</span>
+                    <span className="text-primary">$500</span>
                   </span>
-                  <span className="block text-sm text-muted-foreground mt-1">
-                    Limited time offer - Save $1,000!
+                  <span className="block text-xs sm:text-sm text-muted-foreground">
+                    Limited time - Save $1,000!
                   </span>
                 </>
               )}
@@ -353,40 +353,43 @@ export default function IntroExperience() {
           </DialogHeader>
 
           {!submitted ? (
-            <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10 space-y-4 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10 space-y-3 mt-2">
+              <div className="space-y-1">
+                <Label htmlFor="name" className="text-sm">Name</Label>
                 <Input
                   id="name"
                   placeholder="Your name"
+                  className="h-9"
                   {...form.register("name")}
                   data-testid="input-name"
                 />
                 {form.formState.errors.name && (
-                  <p className="text-sm text-destructive">{form.formState.errors.name.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+              <div className="space-y-1">
+                <Label htmlFor="email" className="text-sm">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
+                  className="h-9"
                   {...form.register("email")}
                   data-testid="input-email"
                 />
                 {form.formState.errors.email && (
-                  <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
+                  <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone (optional)</Label>
+              <div className="space-y-1">
+                <Label htmlFor="phone" className="text-sm">Phone (optional)</Label>
                 <Input
                   id="phone"
                   type="tel"
                   placeholder="(555) 123-4567"
+                  className="h-9"
                   {...form.register("phone")}
                   data-testid="input-phone"
                 />
@@ -394,7 +397,7 @@ export default function IntroExperience() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full mt-2"
                 disabled={subscribeMutation.isPending}
                 data-testid="button-submit"
               >
@@ -405,14 +408,14 @@ export default function IntroExperience() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative z-10 text-center py-8"
+              className="relative z-10 text-center py-4"
             >
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 0.5 }}
-                className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center"
+                className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center"
               >
-                <svg width="40" height="46" viewBox="0 0 60 70" className="text-primary">
+                <svg width="32" height="38" viewBox="0 0 60 70" className="text-primary">
                   <polygon
                     points="30,2 55,18 55,52 30,68 5,52 5,18"
                     fill="currentColor"
@@ -420,10 +423,10 @@ export default function IntroExperience() {
                 </svg>
               </motion.div>
               <p className="text-lg font-medium">You're in!</p>
-              <p className="text-muted-foreground mt-2">Check your inbox soon.</p>
+              <p className="text-muted-foreground text-sm mt-1">Check your inbox soon.</p>
               <Link href="/home">
                 <Button
-                  className="mt-6"
+                  className="mt-4"
                   data-testid="button-explore-hive"
                 >
                   EXPLORE THE HIVE
