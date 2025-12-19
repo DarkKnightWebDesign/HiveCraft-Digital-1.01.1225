@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import introVideo from "@assets/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const subscribeSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -201,7 +202,7 @@ export default function IntroExperience() {
         autoPlay
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-cover z-0"
+        className="fixed inset-0 w-full h-full object-contain z-0"
         data-testid="video-intro"
       >
         <source src={introVideo} type="video/mp4" />
@@ -243,7 +244,17 @@ export default function IntroExperience() {
       )}
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="sm:max-w-lg border-primary/30">
+        <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
+          <motion.img
+            src={logoTransparent}
+            alt=""
+            className="w-[150%] max-w-[600px] sm:max-w-[700px] opacity-30"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 0.3, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+        </div>
+        <DialogContent className="sm:max-w-lg border-primary/30 z-50">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-lg">
             {[...Array(5)].map((_, i) => (
               <motion.div
