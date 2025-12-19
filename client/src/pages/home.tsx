@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MarketingLayout } from "@/components/marketing/layout";
 import { ArrowRight, Monitor, ShoppingCart, Code2, Globe, CheckCircle2, Zap, Shield, Users } from "lucide-react";
-import heroImage from "@assets/7e3fa3f6-18f5-4b40-b340-4a7dfffc4bb6_1766119744896.png";
+import heroVideo from "@assets/Create_a_seamless,_loopable_animated_video_based_on_the_refere_1766130617446.mp4";
 
 const services = [
   {
@@ -52,10 +52,15 @@ export default function Home() {
   return (
     <MarketingLayout>
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-background" />
         
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32 text-center">
