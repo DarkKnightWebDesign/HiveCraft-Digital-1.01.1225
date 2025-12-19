@@ -250,7 +250,7 @@ export default function IntroExperience() {
           <img
             src={logoTransparent}
             alt="HiveCraft Digital"
-            className="w-[90%] max-w-[900px] opacity-[0.92] drop-shadow-[0_0_60px_rgba(0,0,0,1)] drop-shadow-[0_0_100px_rgba(0,0,0,0.9)]"
+            className="w-[90%] max-w-[900px] opacity-[0.92] drop-shadow-[0_0_40px_rgba(0,0,0,1)] drop-shadow-[0_0_80px_rgba(0,0,0,1)] drop-shadow-[0_0_120px_rgba(0,0,0,1)]"
           />
         </motion.div>
       )}
