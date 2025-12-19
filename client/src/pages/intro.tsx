@@ -245,14 +245,58 @@ export default function IntroExperience() {
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
-          <motion.img
-            src={logoTransparent}
-            alt=""
-            className="w-[150%] max-w-[600px] sm:max-w-[700px] opacity-30"
+          <motion.div
+            className="relative"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 0.3, scale: 1 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-          />
+          >
+            <motion.img
+              src={logoTransparent}
+              alt=""
+              className="w-[150%] max-w-[600px] sm:max-w-[700px]"
+              animate={{
+                opacity: [0.2, 0.35, 0.15, 0.4, 0.2, 0.3, 0.25, 0.2],
+                x: [0, -2, 3, -1, 2, 0, -3, 0],
+                y: [0, 1, -2, 0, 1, -1, 2, 0],
+                scale: [1, 1.002, 0.998, 1.001, 0.999, 1, 1.003, 1],
+                filter: [
+                  "hue-rotate(0deg) brightness(1)",
+                  "hue-rotate(10deg) brightness(1.2)",
+                  "hue-rotate(-5deg) brightness(0.9)",
+                  "hue-rotate(0deg) brightness(1.1)",
+                  "hue-rotate(15deg) brightness(0.95)",
+                  "hue-rotate(-10deg) brightness(1.15)",
+                  "hue-rotate(5deg) brightness(1)",
+                  "hue-rotate(0deg) brightness(1)",
+                ],
+              }}
+              transition={{
+                duration: 0.8,
+                repeat: Infinity,
+                repeatType: "loop",
+                ease: "linear",
+                times: [0, 0.1, 0.2, 0.35, 0.5, 0.65, 0.8, 1],
+              }}
+            />
+            <motion.img
+              src={logoTransparent}
+              alt=""
+              className="absolute inset-0 w-[150%] max-w-[600px] sm:max-w-[700px] mix-blend-screen"
+              style={{ filter: "hue-rotate(180deg)" }}
+              animate={{
+                opacity: [0, 0.15, 0, 0.1, 0, 0.2, 0],
+                x: [0, 4, -2, 5, -3, 2, 0],
+                y: [0, -2, 3, -1, 2, -3, 0],
+              }}
+              transition={{
+                duration: 0.5,
+                repeat: Infinity,
+                repeatType: "loop",
+                ease: "linear",
+              }}
+            />
+          </motion.div>
         </div>
         <DialogContent className="sm:max-w-lg border-primary/30 z-50">
           <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-lg">
