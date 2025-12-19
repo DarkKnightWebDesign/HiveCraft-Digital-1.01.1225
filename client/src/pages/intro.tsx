@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import introVideo from "@assets/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4";
 import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
@@ -148,6 +148,9 @@ export default function IntroExperience() {
   const [videoEnded, setVideoEnded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const searchString = useSearch();
+  const isReplayMode = searchString.includes("replay=true");
 
   const form = useForm<SubscribeForm>({
     resolver: zodResolver(subscribeSchema),
@@ -188,12 +191,16 @@ export default function IntroExperience() {
     if (video) {
       const handleVideoEnd = () => {
         setVideoEnded(true);
-        setShowModal(true);
+        if (isReplayMode) {
+          setLocation("/home");
+        } else {
+          setShowModal(true);
+        }
       };
       video.addEventListener("ended", handleVideoEnd);
       return () => video.removeEventListener("ended", handleVideoEnd);
     }
-  }, []);
+  }, [isReplayMode, setLocation]);
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
