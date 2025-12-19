@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MarketingLayout } from "@/components/marketing/layout";
 import { ArrowRight, Monitor, ShoppingCart, Code2, Globe, CheckCircle2, Zap, Shield, Users } from "lucide-react";
+import heroVideo from "@assets/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4";
 
 const services = [
   {
@@ -51,11 +52,16 @@ export default function Home() {
   return (
     <MarketingLayout>
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/10" />
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
-        </div>
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background" />
         
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32 text-center">
           <Badge variant="outline" className="mb-6 px-4 py-1.5 text-xs uppercase tracking-wider" data-testid="badge-hero">
