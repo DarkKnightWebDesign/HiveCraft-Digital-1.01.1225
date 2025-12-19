@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation, useSearch } from "wouter";
 import introVideo from "@assets/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4";
+import heroVideo from "@assets/Create_a_seamless,_loopable_animated_video_based_on_the_refere_1766172802666.mp4";
 import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const subscribeSchema = z.object({
@@ -205,12 +206,25 @@ export default function IntroExperience() {
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
       <div className="fixed inset-0 bg-black z-0" />
+      
+      {videoEnded && !isReplayMode && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="fixed inset-0 w-full h-full object-cover z-[5]"
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+      )}
+      
       <video
         ref={videoRef}
         autoPlay
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-contain z-10"
+        className={`fixed inset-0 w-full h-full object-contain z-10 ${videoEnded ? 'opacity-0' : 'opacity-100'}`}
         data-testid="video-intro"
       >
         <source src={introVideo} type="video/mp4" />
