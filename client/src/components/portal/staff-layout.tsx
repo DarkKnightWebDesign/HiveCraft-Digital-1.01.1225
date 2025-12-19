@@ -23,7 +23,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LayoutDashboard, FolderKanban, Users, MessageSquare, FileText, Settings, LogOut, User, ChevronUp, Activity, Receipt } from "lucide-react";
-import logoDark from "@assets/37c21331-3b3d-44ca-8794-9e920e7c5f2d_1766117265614.png";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
 import type { MemberRole } from "@shared/schema";
 
 const staffNavItems = [
@@ -104,7 +104,7 @@ export function StaffLayout({ children }: StaffLayoutProps) {
           <SidebarHeader className="border-b border-sidebar-border p-4">
             <div className="flex items-center gap-2">
               <Link href="/" data-testid="link-admin-logo">
-                <img src={logoDark} alt="HiveCraft Digital" className="h-8 w-auto" />
+                <img src={logoTransparent} alt="HiveCraft Digital" className="h-10 w-auto" />
               </Link>
               <Badge variant="secondary" className="text-xs">Staff</Badge>
             </div>

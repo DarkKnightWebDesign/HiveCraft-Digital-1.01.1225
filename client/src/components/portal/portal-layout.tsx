@@ -21,7 +21,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LayoutDashboard, FolderKanban, MessageSquare, FileText, Receipt, LogOut, User, ChevronUp } from "lucide-react";
-import logoDark from "@assets/37c21331-3b3d-44ca-8794-9e920e7c5f2d_1766117265614.png";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
 
 const clientNavItems = [
   { href: "/portal", label: "Dashboard", icon: LayoutDashboard },
@@ -75,7 +75,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border p-4">
             <Link href="/" data-testid="link-portal-logo">
-              <img src={logoDark} alt="HiveCraft Digital" className="h-8 w-auto" />
+              <img src={logoTransparent} alt="HiveCraft Digital" className="h-10 w-auto" />
             </Link>
           </SidebarHeader>
           <SidebarContent>

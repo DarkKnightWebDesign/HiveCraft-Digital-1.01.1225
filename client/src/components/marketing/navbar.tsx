@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { Menu, X } from "lucide-react";
-import logoLight from "@assets/image_1766117265614.png";
-import logoDark from "@assets/37c21331-3b3d-44ca-8794-9e920e7c5f2d_1766117265614.png";
-import { useTheme } from "@/components/theme-provider";
+import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent_1766120578590.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -23,7 +21,6 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isLoading } = useAuth();
-  const { theme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,8 +29,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const logoSrc = theme === "dark" ? logoDark : logoLight;
 
   return (
     <nav
@@ -44,12 +39,12 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           <Link href="/" data-testid="link-logo">
             <img
-              src={logoSrc}
+              src={logoTransparent}
               alt="HiveCraft Digital"
-              className="h-10 lg:h-12 w-auto"
+              className="h-14 lg:h-16 w-auto"
             />
           </Link>
 
