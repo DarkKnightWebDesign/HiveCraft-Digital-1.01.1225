@@ -24,6 +24,15 @@ import PortalBilling from "@/pages/portal/billing";
 
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProjects from "@/pages/admin/projects";
+import AdminProfile from "@/pages/admin/profile";
+import AdminClients from "@/pages/admin/clients";
+import AdminMessages from "@/pages/admin/messages";
+import AdminFiles from "@/pages/admin/files";
+import AdminActivity from "@/pages/admin/activity";
+import AdminBilling from "@/pages/admin/billing";
+import AdminSettings from "@/pages/admin/settings";
+
+import PortalProfile from "@/pages/portal/profile";
 
 function Router() {
   return (
@@ -44,11 +53,19 @@ function Router() {
       <Route path="/portal/messages" component={PortalMessages} />
       <Route path="/portal/files" component={PortalFiles} />
       <Route path="/portal/billing" component={PortalBilling} />
+      <Route path="/portal/profile" component={PortalProfile} />
       
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/projects" component={AdminProjects} />
       <Route path="/admin/projects/:id" component={ProjectDetail} />
+      <Route path="/admin/profile" component={AdminProfile} />
+      <Route path="/admin/clients" component={AdminClients} />
+      <Route path="/admin/messages" component={AdminMessages} />
+      <Route path="/admin/files" component={AdminFiles} />
+      <Route path="/admin/activity" component={AdminActivity} />
+      <Route path="/admin/billing" component={AdminBilling} />
+      <Route path="/admin/settings" component={AdminSettings} />
       
       <Route component={NotFound} />
     </Switch>
