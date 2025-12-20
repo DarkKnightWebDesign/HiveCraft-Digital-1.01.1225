@@ -18,17 +18,33 @@ const navLinks = [
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      
+      setIsScrolled(currentScrollY > 20);
+      
+      if (currentScrollY > 100) {
+        if (currentScrollY > lastScrollY) {
+          setIsHidden(true);
+        } else {
+          setIsHidden(false);
+        }
+      } else {
+        setIsHidden(false);
+      }
+      
+      setLastScrollY(currentScrollY);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <nav
@@ -36,15 +52,15 @@ export function Navbar() {
         isScrolled
           ? "bg-background/95 backdrop-blur-md border-b border-border"
           : "bg-transparent"
-      }`}
+      } ${isHidden ? "-translate-y-full" : "translate-y-0"}`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-56 lg:h-64">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           <Link href="/?replay=true" data-testid="link-logo">
             <img
               src={logoTransparent}
               alt="HiveCraft Digital"
-              className="h-48 lg:h-56 w-auto"
+              className="h-16 lg:h-20 w-auto"
             />
           </Link>
 
