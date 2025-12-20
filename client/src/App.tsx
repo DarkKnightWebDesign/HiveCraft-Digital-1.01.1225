@@ -38,6 +38,7 @@ function Router() {
       <Route path="/contact" component={Contact} />
       
       <Route path="/portal" component={PortalDashboard} />
+      <Route path="/portal/dashboard" component={PortalDashboard} />
       <Route path="/portal/projects" component={PortalProjects} />
       <Route path="/portal/projects/:id" component={ProjectDetail} />
       <Route path="/portal/messages" component={PortalMessages} />
@@ -45,6 +46,7 @@ function Router() {
       <Route path="/portal/billing" component={PortalBilling} />
       
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/projects" component={AdminProjects} />
       <Route path="/admin/projects/:id" component={ProjectDetail} />
       
