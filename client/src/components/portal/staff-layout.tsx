@@ -101,10 +101,10 @@ export function StaffLayout({ children }: StaffLayoutProps) {
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex h-screen w-full">
         <Sidebar>
-          <SidebarHeader className="border-b border-sidebar-border p-6">
-            <div className="flex flex-col gap-2">
+          <SidebarHeader className="border-b border-sidebar-border p-2">
+            <div className="flex flex-col gap-1">
               <Link href="/home" data-testid="link-admin-logo">
-                <img src={logoTransparent} alt="HiveCraft Digital" className="h-20 w-auto" />
+                <img src={logoTransparent} alt="HiveCraft Digital" className="w-full max-w-[200px]" />
               </Link>
               <Badge variant="secondary" className="text-xs w-fit">Staff</Badge>
             </div>
