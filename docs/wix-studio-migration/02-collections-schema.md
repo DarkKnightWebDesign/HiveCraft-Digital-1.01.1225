@@ -2,20 +2,37 @@
 
 Complete schema definitions for all HiveCraft Digital collections in Wix CMS.
 
+## Permission Model: Single clientMemberId
+
+**Key Design Decision**: Only the `Projects` collection stores `clientMemberId`. All child entities (Messages, Previews, Files, etc.) reference `projectId` and inherit permissions through that relationship.
+
+```
+Projects.clientMemberId  ←──  The single source of client ownership
+    ↓
+    projectId  ←──  Used by all child collections
+    ↓
+Messages, Previews, Files, Milestones, Tasks, Invoices, ActivityLog
+```
+
+This means permission checks always:
+1. Look up the project by `projectId`
+2. Check if `project.clientMemberId === currentUserId` (for clients)
+3. Or verify staff role (for staff members)
+
 ## Collection Overview
 
-| Collection | Purpose | Records |
-|------------|---------|---------|
-| Projects | Core entity - client projects | Owned by clients |
-| Milestones | Project phases/stages | Linked to projects |
-| Tasks | Granular work items | Linked to projects/milestones |
-| Messages | Project communication | Linked to projects |
-| Previews | Staging links for review | Linked to projects |
-| Files | Uploaded assets | Linked to projects |
-| ActivityLog | Audit trail | Linked to projects |
-| Invoices | Billing records | Linked to projects |
-| MemberRoles | User role assignments | One per user |
-| TeamAssignments | Staff project assignments | Many per project |
+| Collection | Purpose | Permission Key |
+|------------|---------|----------------|
+| Projects | Core entity - client projects | `clientMemberId` (only here) |
+| Milestones | Project phases/stages | via `projectId` → Projects |
+| Tasks | Granular work items | via `projectId` → Projects |
+| Messages | Project communication | via `projectId` → Projects |
+| Previews | Staging links for review | via `projectId` → Projects |
+| Files | Uploaded assets | via `projectId` → Projects |
+| ActivityLog | Audit trail | via `projectId` → Projects |
+| Invoices | Billing records | via `projectId` → Projects |
+| MemberRoles | User role assignments | `userId` (global) |
+| TeamAssignments | Staff project assignments | via `projectId` → Projects |
 
 ---
 
@@ -31,7 +48,7 @@ Complete schema definitions for all HiveCraft Digital collections in Wix CMS.
 | title | Text | Yes | Project name |
 | type | Text | Yes | managed_website, custom_website, online_store, web_app |
 | tier | Text | Yes | launch, growth, scale |
-| status | Text | Yes | discovery, design, build, launch, care, completed, on_hold |
+| status | Text | Yes | Discovery, Design, Build, Review, Launch, Care |
 | startDate | Date | No | When project started |
 | targetLaunchDate | Date | No | Expected completion |
 | progressPercent | Number | Yes | 0-100 completion percentage |
@@ -183,7 +200,7 @@ Complete schema definitions for all HiveCraft Digital collections in Wix CMS.
 | label | Text | Yes | "Homepage Design", "Mobile View", etc. |
 | notes | Text | No | Designer notes |
 | version | Text | Yes | v1.0, v1.1, v2.0, etc. |
-| status | Text | Yes | draft, ready, approved, rejected, revision_requested |
+| status | Text | Yes | Draft, Ready, Approved, Rejected |
 | feedback | Text | No | Client feedback |
 | _createdDate | Date | Auto | When created |
 | _updatedDate | Date | Auto | Last modified |

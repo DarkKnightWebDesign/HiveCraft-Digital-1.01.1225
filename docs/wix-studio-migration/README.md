@@ -54,20 +54,37 @@ The HiveCraft Digital platform consists of three main areas:
 
 ---
 
+## Permission Model: Single clientMemberId
+
+Only the `Projects` collection stores `clientMemberId`. All child entities reference via `projectId`:
+
+```
+Projects.clientMemberId  ←  Single source of client ownership
+    ↓
+    projectId  ←  Used by Messages, Previews, Files, Invoices, etc.
+```
+
+## Standardized Statuses
+
+| Entity | Valid Statuses |
+|--------|----------------|
+| Project | Discovery, Design, Build, Review, Launch, Care |
+| Preview | Draft, Ready, Approved, Rejected |
+
 ## Database Collections
 
-| Collection | Purpose | Key Fields |
-|------------|---------|------------|
-| Projects | Core entity - client projects | clientMemberId, title, status, progressPercent |
-| Milestones | Project phases/stages | projectId, name, status, order |
-| Tasks | Granular work items (staff only) | projectId, milestoneId, assigneeUserId |
-| Messages | Project communication | projectId, senderMemberId, message |
-| Previews | Staging links for review | projectId, url, version, status |
-| Files | Uploaded assets | projectId, fileUrl, fileName |
-| ActivityLog | Audit trail | projectId, eventType, description |
-| Invoices | Billing records | projectId, invoiceNumber, amount, status |
-| MemberRoles | User role assignments | userId, role |
-| TeamAssignments | Staff project assignments | projectId, userId, role |
+| Collection | Purpose | Permission Key |
+|------------|---------|----------------|
+| Projects | Core entity - client projects | `clientMemberId` (only here) |
+| Milestones | Project phases/stages | via `projectId` |
+| Tasks | Granular work items (staff only) | via `projectId` |
+| Messages | Project communication | via `projectId` |
+| Previews | Staging links for review | via `projectId` |
+| Files | Uploaded assets | via `projectId` |
+| ActivityLog | Audit trail | via `projectId` |
+| Invoices | Billing records | via `projectId` |
+| MemberRoles | User role assignments | `userId` (global) |
+| TeamAssignments | Staff project assignments | via `projectId` |
 
 See [02-collections-schema.md](./02-collections-schema.md) for complete field definitions.
 

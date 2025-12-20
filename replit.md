@@ -72,6 +72,13 @@ The platform is built with React/Node.js and designed for future migration to Wi
   - `05-page-architecture.md` - Public, portal, and admin page structure
   - `06-security-tests.md` - 15 security test cases with checklist
 
+## Standardized Statuses
+
+| Entity | Valid Statuses |
+|--------|----------------|
+| Project | Discovery, Design, Build, Review, Launch, Care |
+| Preview | Draft, Ready, Approved, Rejected |
+
 ## Recent Changes
 
 - **December 2024**: Initial platform build

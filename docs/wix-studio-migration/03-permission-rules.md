@@ -4,10 +4,26 @@ Comprehensive permission configuration for all HiveCraft Digital collections.
 
 ## Permission Principles
 
-1. **Client Isolation**: Clients can ONLY see their own projects and related data
-2. **Staff Access**: Staff roles can view/manage projects based on their role
-3. **Backend Enforcement**: Always use `{ suppressAuth: true }` in .jsw files with manual checks
-4. **Defense in Depth**: Permissions at collection level AND in backend code
+1. **Single clientMemberId**: Only `Projects` collection has `clientMemberId`. All child entities use `projectId` reference
+2. **Client Isolation**: Clients can ONLY see their own projects and related data
+3. **Staff Access**: Staff roles can view/manage projects based on their role
+4. **Backend Enforcement**: Always use `{ suppressAuth: true }` in .jsw files with manual checks
+5. **Defense in Depth**: Permissions at collection level AND in backend code
+
+## The clientMemberId Pattern
+
+```
+Permission Check Flow:
+─────────────────────
+1. Request comes in for Messages, Previews, Files, etc.
+2. Extract projectId from the request
+3. Look up: project = Projects.get(projectId)
+4. Check: project.clientMemberId === currentUserId
+5. If yes → allow access
+   If no → check if isStaff() → allow staff, deny others
+```
+
+This pattern is implemented in `ensureProjectAccess()` and used by ALL backend functions.
 
 ---
 

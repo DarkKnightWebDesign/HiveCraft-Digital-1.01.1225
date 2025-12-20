@@ -11,7 +11,7 @@ Complete Velo backend module implementations for HiveCraft Digital.
 | milestoneService.jsw | Milestone management | getMilestones, updateMilestone |
 | taskService.jsw | Task management | getProjectTasks, getMyTasks, updateTask |
 | messagingService.jsw | Project messaging | getMessages, sendMessage |
-| previewService.jsw | Preview management | getPreviews, createPreview, approvePreview |
+| previewService.jsw | Preview management | getPreviews, createPreview, approvePreview, rejectPreview |
 | fileService.jsw | File management | getFiles, uploadFileRecord, deleteFile |
 | activityService.jsw | Activity logging | logActivity, getActivityLog |
 | invoiceService.jsw | Invoice management | getInvoices, createInvoice |
@@ -276,7 +276,7 @@ export async function updateProject(projectId, updates) {
 export async function updateProjectStatus(projectId, newStatus) {
   await ensureStaff();
   
-  const validStatuses = ["discovery", "design", "build", "launch", "care", "completed", "on_hold"];
+  const validStatuses = ["Discovery", "Design", "Build", "Review", "Launch", "Care"];
   if (!validStatuses.includes(newStatus)) {
     throw new Error("Invalid status");
   }
@@ -590,7 +590,7 @@ export async function createPreview(projectId, previewData) {
     label: previewData.label,
     notes: previewData.notes || "",
     version: previewData.version || "v1.0",
-    status: "draft"
+    status: "Draft"
   };
   
   const result = await wixData.insert("Previews", preview, { suppressAuth: true });
@@ -619,7 +619,7 @@ export async function publishPreview(projectId, previewId) {
     throw new Error("Invalid preview");
   }
   
-  preview.status = "ready";
+  preview.status = "Ready";
   preview._updatedDate = new Date();
   
   await wixData.update("Previews", preview, { suppressAuth: true });
@@ -649,7 +649,7 @@ export async function approvePreview(projectId, previewId, feedback = "") {
     throw new Error("Invalid preview");
   }
   
-  preview.status = "approved";
+  preview.status = "Approved";
   preview.feedback = feedback;
   preview._updatedDate = new Date();
   
@@ -665,17 +665,17 @@ export async function approvePreview(projectId, previewId, feedback = "") {
 }
 
 /**
- * Request revision on a preview (client action)
+ * Reject a preview (client action)
  * @param {string} projectId - Project ID
  * @param {string} previewId - Preview ID
- * @param {string} feedback - Revision feedback (required)
+ * @param {string} feedback - Rejection feedback (required)
  * @returns {Promise<Object>} Updated preview
  */
-export async function requestRevision(projectId, previewId, feedback) {
+export async function rejectPreview(projectId, previewId, feedback) {
   await ensureProjectAccess(projectId);
   
   if (!feedback || feedback.trim().length === 0) {
-    throw new Error("Please provide feedback for the revision request");
+    throw new Error("Please provide feedback for the rejection");
   }
   
   const preview = await wixData.get("Previews", previewId, { suppressAuth: true });
@@ -684,7 +684,7 @@ export async function requestRevision(projectId, previewId, feedback) {
     throw new Error("Invalid preview");
   }
   
-  preview.status = "revision_requested";
+  preview.status = "Rejected";
   preview.feedback = feedback.trim();
   preview._updatedDate = new Date();
   
@@ -692,8 +692,8 @@ export async function requestRevision(projectId, previewId, feedback) {
   
   await logActivity({
     projectId,
-    eventType: "preview_revision_requested",
-    description: `Revision requested for "${preview.label}"`
+    eventType: "preview_rejected",
+    description: `Preview "${preview.label}" was rejected`
   });
   
   return preview;
