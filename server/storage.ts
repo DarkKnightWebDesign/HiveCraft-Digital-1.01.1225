@@ -90,6 +90,9 @@ export interface IStorage {
   
   // Subscriptions
   createSubscription(data: InsertSubscription): Promise<Subscription>;
+  
+  // Demo data
+  claimDemoProjects(demoClientId: string, newClientId: string): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -263,6 +266,16 @@ export class DatabaseStorage implements IStorage {
   async createSubscription(data: InsertSubscription): Promise<Subscription> {
     const [subscription] = await db.insert(subscriptions).values(data).returning();
     return subscription;
+  }
+
+  // Demo data - transfer demo projects to a new owner
+  async claimDemoProjects(demoClientId: string, newClientId: string): Promise<number> {
+    const result = await db
+      .update(projects)
+      .set({ clientMemberId: newClientId, updatedAt: new Date() })
+      .where(eq(projects.clientMemberId, demoClientId))
+      .returning();
+    return result.length;
   }
 }
 

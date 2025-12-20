@@ -42,6 +42,21 @@ export async function registerRoutes(
     }
   });
 
+  // Claim demo projects (for testing)
+  app.post("/api/claim-demo-projects", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+      // Update demo projects to be owned by this user
+      const result = await storage.claimDemoProjects("demo-client-001", userId);
+      res.json({ message: "Demo projects claimed", count: result });
+    } catch (error) {
+      console.error("Error claiming demo projects:", error);
+      res.status(500).json({ message: "Failed to claim demo projects" });
+    }
+  });
+
   // CLIENT PORTAL ROUTES
 
   // Get client's projects

@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,9 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PortalLayout } from "@/components/portal/portal-layout";
 import { useAuth } from "@/hooks/use-auth";
-import { FolderKanban, MessageSquare, FileText, Eye, ArrowRight, Clock } from "lucide-react";
+import { FolderKanban, MessageSquare, FileText, Eye, ArrowRight, Clock, Sparkles } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Project } from "@shared/schema";
 
 const statusColors: Record<string, string> = {
@@ -29,9 +31,31 @@ const typeLabels: Record<string, string> = {
 
 export default function PortalDashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const { data: projects, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
+  });
+
+  const claimDemoMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/claim-demo-projects");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      toast({
+        title: "Demo projects loaded",
+        description: `${data.count} sample projects are now available to explore.`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to load demo projects. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   const stats = {
@@ -143,11 +167,22 @@ export default function PortalDashboard() {
                 </div>
                 <h3 className="font-heading font-semibold mb-2">No Projects Yet</h3>
                 <p className="text-sm text-muted-foreground mb-6">
-                  You don't have any active projects. Contact us to get started!
+                  You don't have any active projects. Contact us to get started, or load demo projects to explore the portal.
                 </p>
-                <Link href="/contact">
-                  <Button data-testid="button-start-project">Start a Project</Button>
-                </Link>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <Link href="/contact">
+                    <Button data-testid="button-start-project">Start a Project</Button>
+                  </Link>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => claimDemoMutation.mutate()}
+                    disabled={claimDemoMutation.isPending}
+                    data-testid="button-load-demo"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {claimDemoMutation.isPending ? "Loading..." : "Load Demo Projects"}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
