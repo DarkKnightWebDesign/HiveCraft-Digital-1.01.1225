@@ -73,9 +73,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex h-screen w-full">
         <Sidebar>
-          <SidebarHeader className="border-b border-sidebar-border p-4">
+          <SidebarHeader className="border-b border-sidebar-border p-6">
             <Link href="/home" data-testid="link-portal-logo">
-              <img src={logoTransparent} alt="HiveCraft Digital" className="h-12 w-auto" />
+              <img src={logoTransparent} alt="HiveCraft Digital" className="h-20 w-auto" />
             </Link>
           </SidebarHeader>
           <SidebarContent>
