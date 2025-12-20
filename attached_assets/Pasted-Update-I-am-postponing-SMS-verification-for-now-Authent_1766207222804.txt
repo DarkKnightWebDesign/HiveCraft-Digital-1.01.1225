@@ -1,0 +1,49 @@
+Update: I am postponing SMS verification for now.
+
+Authentication requirement (Wix-first):
+- The final website will use Wix Studio + Wix Members.
+- Use the Wix Members built-in login/signup modal (NOT custom auth screens).
+- For V1, rely on Wix email verification + member roles.
+- The portal must be built so it works behind member-only pages in Wix Studio.
+
+What to build in this Replit environment:
+I still want you to build the full website + portal experience as a reference implementation, BUT treat auth as “Wix Members will handle it.”
+
+So in Replit:
+1) Build public marketing pages:
+   - Home, Services, Process, Pricing, Contact
+2) Build portal pages as if they are protected by login:
+   Client Portal:
+   - Dashboard (My Projects)
+   - Project Detail tabs: Overview / Timeline / Previews / Files / Messages / Billing
+   - Previews: view link + comment + approve/reject
+   - Messages: per-project thread
+   - Files: upload/download
+   - Activity/Updates feed
+3) Build Staff/Admin portal pages as role-based:
+   - Admin Dashboard
+   - Project Manager view
+   - Designer/Developer work queue
+   - Billing view
+   - Ability to create projects, update milestones/status, publish previews, message clients, log activity.
+
+Critical deliverable: Wix Studio/Velo Implementation Pack
+Provide a step-by-step guide to recreate this in Wix Studio using Wix Members:
+- How to enable Wix Members Area + login/signup modal
+- How to turn on email verification
+- How to set up member roles: Admin, PM, Designer, Developer, Editor, Billing, Client
+- Collections schema:
+  Projects, Milestones, Tasks, Messages, Previews, Files, ActivityLog, Invoices
+- Permission rules:
+  Clients can only access records where clientMemberId == currentMemberId
+  Staff roles have appropriate access
+- Backend web modules (.jsw):
+  authzService.jsw, projectService.jsw, messagingService.jsw, previewService.jsw, fileService.jsw
+- Page architecture:
+  Public pages + Member-only portal pages + Staff-only admin pages
+- A test checklist for permissions/security.
+
+Important:
+- Do NOT implement SMS verification right now.
+- Do NOT implement a custom login modal as the final solution.
+- Build the portal experience and document how Wix Members modal will gate access in Wix Studio.

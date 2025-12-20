@@ -10,7 +10,16 @@ HiveCraft Digital is a comprehensive web design and development agency platform 
 
 ## Current State
 
-The platform is built with React/Node.js and designed for future migration to Wix Studio. All authentication uses Replit Auth, and data is stored in PostgreSQL.
+The platform is built with React/Node.js and designed for future migration to Wix Studio. Authentication currently uses Replit Auth (for development/prototyping), but the final Wix Studio implementation will use **Wix Members** with built-in login/signup modal and email verification. Data is stored in PostgreSQL.
+
+### Authentication Strategy
+
+**Development (Replit)**: Uses Replit Auth (OIDC) for quick testing
+**Production (Wix Studio)**: Will use Wix Members with:
+- Built-in login/signup modal (NOT custom auth screens)
+- Email verification required
+- Member roles stored in MemberRoles collection
+- No SMS verification for V1
 
 ## Architecture
 
@@ -55,7 +64,13 @@ The platform is built with React/Node.js and designed for future migration to Wi
 
 ### Documentation
 - `design_guidelines.md` - Brand and design system
-- `docs/wix-studio-migration/` - Wix Studio transfer guide
+- `docs/wix-studio-migration/` - Wix Studio/Velo transfer pack:
+  - `01-wix-members-setup.md` - Login modal, email verification, member roles
+  - `02-collections-schema.md` - All 10 database collection schemas
+  - `03-permission-rules.md` - Collection permissions and backend enforcement
+  - `04-backend-modules.md` - Complete .jsw module implementations
+  - `05-page-architecture.md` - Public, portal, and admin page structure
+  - `06-security-tests.md` - 15 security test cases with checklist
 
 ## Recent Changes
 
