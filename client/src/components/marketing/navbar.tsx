@@ -3,8 +3,10 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
 import { Menu, X } from "lucide-react";
 import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
+import type { MemberRole } from "@shared/schema";
 
 const navLinks = [
   { href: "/home", label: "Home" },
@@ -23,6 +25,13 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isLoading } = useAuth();
+
+  const { data: memberRole } = useQuery<MemberRole>({
+    queryKey: ["/api/member-role"],
+    enabled: !!user,
+  });
+
+  const isStaff = memberRole && memberRole.role !== "client";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,9 +98,16 @@ export function Navbar() {
             {isLoading ? (
               <div className="w-24 h-9 bg-muted rounded-md animate-pulse" />
             ) : user ? (
-              <Link href="/portal">
-                <Button data-testid="button-portal">Client Portal</Button>
-              </Link>
+              <>
+                <Link href="/portal">
+                  <Button variant="outline" data-testid="button-portal">Client Portal</Button>
+                </Link>
+                {isStaff && (
+                  <Link href="/admin">
+                    <Button data-testid="button-admin-portal">Admin Portal</Button>
+                  </Link>
+                )}
+              </>
             ) : (
               <a href="/api/login">
                 <Button data-testid="button-login">Login</Button>
@@ -131,12 +147,19 @@ export function Navbar() {
                 </span>
               </Link>
             ))}
-            <div className="pt-4 border-t border-border flex items-center justify-between">
+            <div className="pt-4 border-t border-border flex items-center justify-between gap-2">
               <ThemeToggle />
               {user ? (
-                <Link href="/portal" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button size="sm" data-testid="button-mobile-portal">Portal</Button>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link href="/portal" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button size="sm" variant="outline" data-testid="button-mobile-portal">Portal</Button>
+                  </Link>
+                  {isStaff && (
+                    <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button size="sm" data-testid="button-mobile-admin-portal">Admin</Button>
+                    </Link>
+                  )}
+                </div>
               ) : (
                 <a href="/api/login">
                   <Button size="sm" data-testid="button-mobile-login">Login</Button>
