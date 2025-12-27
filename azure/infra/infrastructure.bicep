@@ -1,6 +1,8 @@
 param location string = 'eastus'
 param environment string = 'dev'
 param projectName string = 'hivecraft'
+@secure()
+param sqlAdminPassword string
 
 // Resource Group is assumed to already exist
 
@@ -10,7 +12,7 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   location: location
   properties: {
     administratorLogin: 'hivecraftadmin'
-    administratorLoginPassword: 'REPLACE_WITH_SECURE_PASSWORD'
+    administratorLoginPassword: EqOrahayes4599$
     version: '12.0'
   }
 }
@@ -65,3 +67,4 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 }
+az group show --name hivecraft-dev-rg
