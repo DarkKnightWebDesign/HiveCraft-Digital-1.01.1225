@@ -4,6 +4,9 @@ param projectName string = 'hivecraft'
 @secure()
 param sqlAdminPassword string
 
+var unique = toLower(take(uniqueString(resourceGroup().id), 6))
+
+
 // Resource Group is assumed to already exist
 
 // SQL Server
@@ -30,7 +33,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
 
 // Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: '${projectName}storage${environment}'
+  name: '${projectName}storage${environment}${unique}'
   location: location
   sku: {
     name: 'Standard_LRS'
