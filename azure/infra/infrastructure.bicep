@@ -12,7 +12,7 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   location: location
   properties: {
     administratorLogin: 'hivecraftadmin'
-    administratorLoginPassword: EqOrahayes4599$
+    administratorLoginPassword: 'sqlAdminPassword'
     version: '12.0'
   }
 }
@@ -67,4 +67,4 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 }
-az group show --name hivecraft-dev-rg
+
