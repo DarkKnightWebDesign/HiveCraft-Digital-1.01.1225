@@ -1,0 +1,16 @@
+{
+  "name": "hivecraft-api",
+  "version": "1.0.0",
+  "description": "HiveCraft Digital Azure Functions API",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "mssql": "^11.0.1"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.x"
+  }
+}
