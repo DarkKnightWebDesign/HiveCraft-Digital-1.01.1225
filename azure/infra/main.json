@@ -1,0 +1,488 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "7304675741829118617"
+    }
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "metadata": {
+        "description": "Name of the environment for tagging and resource naming"
+      }
+    },
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Primary location for all resources"
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "[format('rg-{0}', parameters('environmentName'))]",
+      "metadata": {
+        "description": "Resource group name"
+      }
+    },
+    "postgresAdminLogin": {
+      "type": "string",
+      "defaultValue": "hivecraftadmin",
+      "metadata": {
+        "description": "PostgreSQL administrator login name"
+      }
+    },
+    "postgresAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "PostgreSQL administrator password"
+      }
+    },
+    "sessionSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Session secret for Express session management"
+      }
+    },
+    "replitClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Replit OAuth Client ID"
+      }
+    },
+    "replitClientSecret": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Replit OAuth Client Secret"
+      }
+    }
+  },
+  "variables": {
+    "resourceToken": "[uniqueString(subscription().id, parameters('location'), parameters('environmentName'))]",
+    "abbrs": {
+      "containerRegistry": "acr",
+      "containerApp": "ca",
+      "containerAppEnvironment": "cae",
+      "logAnalytics": "log",
+      "managedIdentity": "id",
+      "postgreSQLServer": "psql",
+      "storageAccount": "st"
+    }
+  },
+  "resources": {
+    "rg": {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('resourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "azd-env-name": "[parameters('environmentName')]"
+      }
+    },
+    "resources": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('resources-{0}', uniqueString('resources', deployment().name))]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "environmentName": {
+            "value": "[parameters('environmentName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "resourceToken": {
+            "value": "[variables('resourceToken')]"
+          },
+          "abbrs": {
+            "value": "[variables('abbrs')]"
+          },
+          "postgresAdminLogin": {
+            "value": "[parameters('postgresAdminLogin')]"
+          },
+          "postgresAdminPassword": {
+            "value": "[parameters('postgresAdminPassword')]"
+          },
+          "sessionSecret": {
+            "value": "[parameters('sessionSecret')]"
+          },
+          "replitClientId": {
+            "value": "[parameters('replitClientId')]"
+          },
+          "replitClientSecret": {
+            "value": "[parameters('replitClientSecret')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "16299946600266521348"
+            }
+          },
+          "parameters": {
+            "environmentName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "resourceToken": {
+              "type": "string"
+            },
+            "abbrs": {
+              "type": "object"
+            },
+            "postgresAdminLogin": {
+              "type": "string"
+            },
+            "postgresAdminPassword": {
+              "type": "securestring"
+            },
+            "sessionSecret": {
+              "type": "securestring"
+            },
+            "replitClientId": {
+              "type": "string"
+            },
+            "replitClientSecret": {
+              "type": "securestring"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken'))]",
+              "location": "[parameters('location')]"
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2023-09-01",
+              "name": "[format('{0}{1}', parameters('abbrs').logAnalytics, parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "retentionInDays": 30
+              }
+            },
+            {
+              "type": "Microsoft.ContainerRegistry/registries",
+              "apiVersion": "2023-11-01-preview",
+              "name": "[format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              },
+              "properties": {
+                "adminUserEnabled": true
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken')))]",
+              "name": "[guid(resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken'))), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken'))), 'acrpull')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2024-03-01",
+              "name": "[format('{0}{1}', parameters('abbrs').containerAppEnvironment, parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', format('{0}{1}', parameters('abbrs').logAnalytics, parameters('resourceToken'))), '2023-09-01').customerId]",
+                    "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', format('{0}{1}', parameters('abbrs').logAnalytics, parameters('resourceToken'))), '2023-09-01').primarySharedKey]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', format('{0}{1}', parameters('abbrs').logAnalytics, parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+              "apiVersion": "2023-12-01-preview",
+              "name": "[format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_B1ms",
+                "tier": "Burstable"
+              },
+              "properties": {
+                "version": "16",
+                "administratorLogin": "[parameters('postgresAdminLogin')]",
+                "administratorLoginPassword": "[parameters('postgresAdminPassword')]",
+                "storage": {
+                  "storageSizeGB": 32,
+                  "autoGrow": "Enabled"
+                },
+                "backup": {
+                  "backupRetentionDays": 7,
+                  "geoRedundantBackup": "Disabled"
+                },
+                "network": {
+                  "publicNetworkAccess": "Enabled"
+                },
+                "highAvailability": {
+                  "mode": "Disabled"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.DBforPostgreSQL/flexibleServers/databases",
+              "apiVersion": "2023-12-01-preview",
+              "name": "[format('{0}/{1}', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')), 'hivecraft')]",
+              "properties": {
+                "charset": "UTF8",
+                "collation": "en_US.utf8"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+              "apiVersion": "2023-12-01-preview",
+              "name": "[format('{0}/{1}', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')), 'AllowAzureServices')]",
+              "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+              "apiVersion": "2023-12-01-preview",
+              "name": "[format('{0}/{1}', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')), 'AllowAll')]",
+              "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "255.255.255.255"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}{1}', parameters('abbrs').storageAccount, parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "kind": "StorageV2",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "properties": {
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": false,
+                "supportsHttpsTrafficOnly": true
+              }
+            },
+            {
+              "type": "Microsoft.App/containerApps",
+              "apiVersion": "2024-03-01",
+              "name": "[format('{0}{1}', parameters('abbrs').containerApp, parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken'))))]": {}
+                }
+              },
+              "tags": {
+                "azd-service-name": "web"
+              },
+              "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('{0}{1}', parameters('abbrs').containerAppEnvironment, parameters('resourceToken')))]",
+                "configuration": {
+                  "ingress": {
+                    "external": true,
+                    "targetPort": 3000,
+                    "allowInsecure": false,
+                    "corsPolicy": {
+                      "allowedOrigins": [
+                        "*"
+                      ],
+                      "allowedMethods": [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "PATCH",
+                        "OPTIONS"
+                      ],
+                      "allowedHeaders": [
+                        "*"
+                      ],
+                      "allowCredentials": true
+                    }
+                  },
+                  "registries": [
+                    {
+                      "server": "[reference(resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken'))), '2023-11-01-preview').loginServer]",
+                      "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken')))]"
+                    }
+                  ],
+                  "secrets": [
+                    {
+                      "name": "database-url",
+                      "value": "[format('postgresql://{0}:{1}@{2}:5432/{3}?sslmode=require', parameters('postgresAdminLogin'), parameters('postgresAdminPassword'), reference(resourceId('Microsoft.DBforPostgreSQL/flexibleServers', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken'))), '2023-12-01-preview').fullyQualifiedDomainName, 'hivecraft')]"
+                    },
+                    {
+                      "name": "session-secret",
+                      "value": "[parameters('sessionSecret')]"
+                    },
+                    {
+                      "name": "replit-client-secret",
+                      "value": "[parameters('replitClientSecret')]"
+                    }
+                  ]
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "hivecraft",
+                      "image": "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1Gi"
+                      },
+                      "env": [
+                        {
+                          "name": "DATABASE_URL",
+                          "secretRef": "database-url"
+                        },
+                        {
+                          "name": "SESSION_SECRET",
+                          "secretRef": "session-secret"
+                        },
+                        {
+                          "name": "REPLIT_CLIENT_ID",
+                          "value": "[parameters('replitClientId')]"
+                        },
+                        {
+                          "name": "REPLIT_CLIENT_SECRET",
+                          "secretRef": "replit-client-secret"
+                        },
+                        {
+                          "name": "PORT",
+                          "value": "3000"
+                        },
+                        {
+                          "name": "NODE_ENV",
+                          "value": "production"
+                        }
+                      ]
+                    }
+                  ],
+                  "scale": {
+                    "minReplicas": 1,
+                    "maxReplicas": 3,
+                    "rules": [
+                      {
+                        "name": "http-scaling",
+                        "http": {
+                          "metadata": {
+                            "concurrentRequests": "100"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "dependsOn": [
+                "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken'))), 'Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken'))), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken'))), 'acrpull'))]",
+                "[resourceId('Microsoft.App/managedEnvironments', format('{0}{1}', parameters('abbrs').containerAppEnvironment, parameters('resourceToken')))]",
+                "[resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken')))]",
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers/databases', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')), 'hivecraft')]",
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('abbrs').containerRegistry, parameters('resourceToken'))), '2023-11-01-preview').loginServer]"
+            },
+            "AZURE_CONTAINER_APP_ENDPOINT": {
+              "type": "string",
+              "value": "[format('https://{0}', reference(resourceId('Microsoft.App/containerApps', format('{0}{1}', parameters('abbrs').containerApp, parameters('resourceToken'))), '2024-03-01').configuration.ingress.fqdn)]"
+            },
+            "POSTGRES_HOST": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/flexibleServers', format('{0}{1}', parameters('abbrs').postgreSQLServer, parameters('resourceToken'))), '2023-12-01-preview').fullyQualifiedDomainName]"
+            },
+            "POSTGRES_DATABASE": {
+              "type": "string",
+              "value": "hivecraft"
+            },
+            "MANAGED_IDENTITY_CLIENT_ID": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}{1}', parameters('abbrs').managedIdentity, parameters('resourceToken'))), '2023-01-31').clientId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "rg"
+      ]
+    }
+  },
+  "outputs": {
+    "RESOURCE_GROUP_ID": {
+      "type": "string",
+      "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+    },
+    "AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+      "type": "string",
+      "value": "[reference('resources').outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT.value]"
+    },
+    "AZURE_CONTAINER_APP_ENDPOINT": {
+      "type": "string",
+      "value": "[reference('resources').outputs.AZURE_CONTAINER_APP_ENDPOINT.value]"
+    },
+    "POSTGRES_HOST": {
+      "type": "string",
+      "value": "[reference('resources').outputs.POSTGRES_HOST.value]"
+    },
+    "POSTGRES_DATABASE": {
+      "type": "string",
+      "value": "[reference('resources').outputs.POSTGRES_DATABASE.value]"
+    }
+  }
+}

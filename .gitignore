@@ -2,6 +2,11 @@ node_modules
 dist
 .DS_Store
 .env
+.env.*
+!.env.azure.example
 server/public
 vite.config.ts.*
 *.tar.gz
+.azure/
+.vscode/
+.idea/

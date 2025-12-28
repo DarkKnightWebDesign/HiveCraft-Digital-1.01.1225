@@ -1,0 +1,10 @@
+using './main.bicep'
+
+param environmentName = '${readEnvironmentVariable('AZURE_ENV_NAME', 'hivecraft-dev')}'
+param location = '${readEnvironmentVariable('AZURE_LOCATION', 'eastus2')}'
+param resourceGroupName = 'rg-${environmentName}'
+param postgresAdminLogin = 'hivecraftadmin'
+param postgresAdminPassword = '${readEnvironmentVariable('POSTGRES_ADMIN_PASSWORD', '')}'
+param sessionSecret = '${readEnvironmentVariable('SESSION_SECRET', '')}'
+param replitClientId = '${readEnvironmentVariable('REPLIT_CLIENT_ID', '')}'
+param replitClientSecret = '${readEnvironmentVariable('REPLIT_CLIENT_SECRET', '')}'
