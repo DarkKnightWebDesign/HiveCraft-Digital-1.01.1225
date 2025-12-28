@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { Menu, X } from "lucide-react";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const navLinks = [
   { href: "/home", label: "Home" },
@@ -58,7 +57,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-20 lg:h-24">
           <Link href="/?replay=true" data-testid="link-logo">
             <img
-              src={logoTransparent}
+              src="/HiveCraft_Digital_Logo_Transparent.png"
               alt="HiveCraft Digital"
               className="h-40 lg:h-48 w-auto"
             />

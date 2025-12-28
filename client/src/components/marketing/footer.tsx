@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const footerLinks = {
   services: [
@@ -29,7 +28,7 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link href="/home" data-testid="link-footer-logo">
               <img
-                src={logoTransparent}
+                src="/HiveCraft_Digital_Logo_Transparent.png"
                 alt="HiveCraft Digital"
                 className="h-16 w-auto mb-6"
               />
