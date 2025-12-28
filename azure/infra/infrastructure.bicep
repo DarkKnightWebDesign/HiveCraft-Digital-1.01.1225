@@ -1,17 +1,25 @@
-param location string = 'eastus'
-param environment string = 'dev'
+param location string = 'eastus2'
+param envName string = 'dev'
 param projectName string = 'hivecraft'
+
 @secure()
 param sqlAdminPassword string
 
-//var unique = toLower(take(uniqueString(resourceGroup().id), 6))
+param prefix string = 'hivecraft'
+
+var suffix = toLower(uniqueString(resourceGroup().id))
+var storageName = '${take(prefix, 11)}${take(suffix, 13)}'
+
+var shortSuffix = take(suffix, 6)
+var functionAppName = '${projectName}-api-${envName}-${shortSuffix}'
+var functionPlanName = '${projectName}-plan-${envName}-${shortSuffix}'
 
 
 // Resource Group is assumed to already exist
 
 // SQL Server
 resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
-  name: '${projectName}-sql-${environment}'
+  name: '${projectName}-sql-${envName}'
   location: location
   properties: {
     administratorLogin: 'hivecraftadmin'
@@ -23,7 +31,7 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
 // SQL Database
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
   parent: sqlServer
-  name: '${projectName}-db-${environment}'
+  name: '${projectName}-db-${envName}'
   location: location
   sku: {
     name: 'Basic'
@@ -33,7 +41,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
 
 // Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: '${projectName}storage${environment}'
+  name: storageName
   location: location
   sku: {
     name: 'Standard_LRS'
@@ -46,7 +54,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 // Azure Function App (Consumption)
 resource functionPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: '${projectName}-plan-${environment}'
+  name: functionPlanName
   location: location
   sku: {
     name: 'Y1'
@@ -55,18 +63,31 @@ resource functionPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
 }
 
 resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: '${projectName}-api-${environment}'
+  name: functionAppName
   location: location
   kind: 'functionapp'
   properties: {
     serverFarmId: functionPlan.id
     siteConfig: {
       appSettings: [
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'node'
-        }
-      ]
+  {
+    name: 'FUNCTIONS_WORKER_RUNTIME'
+    value: 'node'
+  }
+  {
+    name: 'FUNCTIONS_EXTENSION_VERSION'
+    value: '~4'
+  }
+  {
+  name: 'AzureWebJobsStorage'
+  value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=core.windows.net'
+}
+  {
+    name: 'WEBSITE_RUN_FROM_PACKAGE'
+    value: '1'
+  }
+]
+
     }
   }
 }
