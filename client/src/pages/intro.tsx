@@ -193,17 +193,19 @@ export default function IntroExperience() {
   };
 
   useEffect(() => {
-    // Simulate video end after 3 seconds (since we removed the actual video)
-    const timer = setTimeout(() => {
-      setVideoEnded(true);
-      if (isReplayMode) {
-        setLocation("/home");
-      } else {
-        setShowModal(true);
-      }
-    }, 3000);
-    
-    return () => clearTimeout(timer);
+    const video = videoRef.current;
+    if (video) {
+      const handleVideoEnd = () => {
+        setVideoEnded(true);
+        if (isReplayMode) {
+          setLocation("/home");
+        } else {
+          setShowModal(true);
+        }
+      };
+      video.addEventListener("ended", handleVideoEnd);
+      return () => video.removeEventListener("ended", handleVideoEnd);
+    }
   }, [isReplayMode, setLocation]);
 
   return (
@@ -211,25 +213,27 @@ export default function IntroExperience() {
       <div className="fixed inset-0 bg-black z-0" />
       
       {videoEnded && !isReplayMode && (
-        <div className="fixed inset-0 w-full h-full z-[5] bg-gradient-to-br from-background via-muted/50 to-background">
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-        </div>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="fixed inset-0 w-full h-full object-cover z-[5]"
+        >
+          <source src="/Create_a_seamless,_loopable_animated_video_based_on_the_refere_1766172802666.mp4" type="video/mp4" />
+        </video>
       )}
       
-      <div
-        ref={videoRef as any}
-        className={`fixed inset-0 w-full h-full z-10 flex items-center justify-center ${videoEnded ? 'opacity-0' : 'opacity-100'}`}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className={`fixed inset-0 w-full h-full object-contain z-10 ${videoEnded ? 'opacity-0' : 'opacity-100'}`}
         data-testid="video-intro"
       >
-        <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 2 }}
-          className="text-4xl font-bold text-primary"
-        >
-          HiveCraft Digital
-        </motion.div>
-      </div>
+        <source src="/Create_a_cinematic_logo_reveal_animation_featuring_the_provide_1766131297823.mp4" type="video/mp4" />
+      </video>
 
       {videoEnded && !isReplayMode && <AnimatedBackground />}
 
