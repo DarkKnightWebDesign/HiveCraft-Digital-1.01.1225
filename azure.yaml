@@ -4,6 +4,9 @@ name: hivecraft-backend
 metadata:
   template: hivecraft-backend
 
+infra:
+  path: azure/infra
+
 services:
   web:
     project: .
