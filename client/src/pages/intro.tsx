@@ -11,7 +11,6 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation, useSearch } from "wouter";
-import logoTransparent from "@assets/HiveCraft_Digital_Logo_Transparent.png";
 
 const subscribeSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -242,7 +241,7 @@ export default function IntroExperience() {
           className="fixed inset-0 z-20 flex items-center justify-center pointer-events-none"
         >
           <img
-            src={logoTransparent}
+            src="/HiveCraft_Digital_Logo_Transparent.png"
             alt="HiveCraft Digital"
             className="w-[90%] max-w-[900px] opacity-[0.92]"
             style={{
@@ -300,7 +299,7 @@ export default function IntroExperience() {
                 transition={{ duration: 0.5 }}
               >
                 <motion.img
-                  src={logoTransparent}
+                  src="/HiveCraft_Digital_Logo_Transparent.png"
                   alt=""
                   className="w-[280px] sm:w-[350px] md:w-[420px] lg:w-[500px]"
                   animate={{
@@ -328,7 +327,7 @@ export default function IntroExperience() {
                   }}
                 />
                 <motion.img
-                  src={logoTransparent}
+                  src="/HiveCraft_Digital_Logo_Transparent.png"
                   alt=""
                   className="absolute inset-0 w-[280px] sm:w-[350px] md:w-[420px] lg:w-[500px] mix-blend-screen"
                   style={{ filter: "hue-rotate(180deg)" }}
