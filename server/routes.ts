@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, registerAuthRoutes } from "./replit_integrations/auth";
+import authRoutes from "./auth/routes";
+import passport from "./auth/oauth-config";
 import { insertProjectSchema, insertMilestoneSchema, insertMessageSchema, insertPreviewSchema, insertFileSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -9,9 +11,12 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup authentication
+  // Setup authentication (includes session middleware and passport)
   await setupAuth(app);
   registerAuthRoutes(app);
+  
+  // Email/password and OAuth auth routes
+  app.use("/api", authRoutes);
 
   // Helper to get current user ID
   const getUserId = (req: any): string | null => {

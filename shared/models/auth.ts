@@ -17,10 +17,25 @@ export const sessions = pgTable(
 // (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
+  email: varchar("email").unique().notNull(),
+  passwordHash: varchar("password_hash"), // For email/password auth
+  name: varchar("name"), // Combined name field
+  firstName: varchar("first_name"), // For Replit OAuth
+  lastName: varchar("last_name"), // For Replit OAuth
+  role: varchar("role").notNull().default("client"), // client, admin, staff
   profileImageUrl: varchar("profile_image_url"),
+  
+  // OAuth provider fields
+  googleId: varchar("google_id").unique(),
+  facebookId: varchar("facebook_id").unique(),
+  githubId: varchar("github_id").unique(),
+  
+  // Phone verification fields
+  phoneNumber: varchar("phone_number").unique(),
+  phoneVerified: varchar("phone_verified").default("false"), // "true" or "false"
+  verificationCode: varchar("verification_code"),
+  verificationCodeExpiry: timestamp("verification_code_expiry"),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

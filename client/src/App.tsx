@@ -13,6 +13,8 @@ import Pricing from "@/pages/pricing";
 import Portfolio from "@/pages/portfolio";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
 
 import PortalDashboard from "@/pages/portal/dashboard";
@@ -45,6 +47,9 @@ function Router() {
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
       
       <Route path="/portal" component={PortalDashboard} />
       <Route path="/portal/dashboard" component={PortalDashboard} />
