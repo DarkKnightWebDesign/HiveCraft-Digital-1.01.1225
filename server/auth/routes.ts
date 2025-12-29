@@ -27,8 +27,13 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    // Successful authentication, redirect based on role
+    // Successful authentication - set session userId for consistency
     const user = req.user as any;
+    if (req.session && user?.id) {
+      req.session.userId = user.id;
+    }
+    
+    // Redirect based on role
     if (user?.role === "admin") {
       res.redirect("/admin");
     } else {
@@ -47,8 +52,13 @@ router.get(
   "/auth/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   (req, res) => {
-    // Successful authentication, redirect based on role
+    // Successful authentication - set session userId for consistency
     const user = req.user as any;
+    if (req.session && user?.id) {
+      req.session.userId = user.id;
+    }
+    
+    // Redirect based on role
     if (user?.role === "admin") {
       res.redirect("/admin");
     } else {
@@ -67,8 +77,13 @@ router.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/login" }),
   (req, res) => {
-    // Successful authentication, redirect based on role
+    // Successful authentication - set session userId for consistency
     const user = req.user as any;
+    if (req.session && user?.id) {
+      req.session.userId = user.id;
+    }
+    
+    // Redirect based on role
     if (user?.role === "admin") {
       res.redirect("/admin");
     } else {

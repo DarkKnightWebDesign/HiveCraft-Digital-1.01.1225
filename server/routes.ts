@@ -1,26 +1,54 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated, registerAuthRoutes } from "./replit_integrations/auth";
 import authRoutes from "./auth/routes";
+import { requireAuth } from "./auth/email-auth";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 import passport from "./auth/oauth-config";
 import { insertProjectSchema, insertMilestoneSchema, insertMessageSchema, insertPreviewSchema, insertFileSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
+
+// Session configuration
+function getSessionMiddleware() {
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const pgStore = connectPg(session);
+  const sessionStore = new pgStore({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: false,
+    ttl: sessionTtl,
+    tableName: "sessions",
+  });
+  return session({
+    secret: process.env.SESSION_SECRET!,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: sessionTtl,
+    },
+  });
+}
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup authentication (includes session middleware and passport)
-  await setupAuth(app);
-  registerAuthRoutes(app);
+  // Setup session middleware
+  app.set("trust proxy", 1);
+  app.use(getSessionMiddleware());
+  app.use(passport.initialize());
+  app.use(passport.session());
   
-  // Email/password and OAuth auth routes
+  // Auth routes (email/password + OAuth)
   app.use("/api", authRoutes);
 
-  // Helper to get current user ID
+  // Helper to get current user ID from session
   const getUserId = (req: any): string | null => {
-    return req.user?.claims?.sub || null;
+    return req.session?.userId || req.user?.id || null;
   };
 
   // Helper to check if user is staff
@@ -30,7 +58,7 @@ export async function registerRoutes(
   };
 
   // Member Role endpoint
-  app.get("/api/member-role", isAuthenticated, async (req: any, res) => {
+  app.get("/api/member-role", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -48,7 +76,7 @@ export async function registerRoutes(
   });
 
   // Claim demo projects (for testing)
-  app.post("/api/claim-demo-projects", isAuthenticated, async (req: any, res) => {
+  app.post("/api/claim-demo-projects", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -65,7 +93,7 @@ export async function registerRoutes(
   // CLIENT PORTAL ROUTES
 
   // Get client's projects
-  app.get("/api/projects", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -79,7 +107,7 @@ export async function registerRoutes(
   });
 
   // Get single project (client access check)
-  app.get("/api/projects/:id", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects/:id", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -103,7 +131,7 @@ export async function registerRoutes(
   });
 
   // Get project milestones
-  app.get("/api/projects/:id/milestones", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects/:id/milestones", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -129,7 +157,7 @@ export async function registerRoutes(
   });
 
   // Get project previews
-  app.get("/api/projects/:id/previews", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects/:id/previews", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -154,7 +182,7 @@ export async function registerRoutes(
   });
 
   // Get project messages
-  app.get("/api/projects/:id/messages", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects/:id/messages", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -179,7 +207,7 @@ export async function registerRoutes(
   });
 
   // Send message
-  app.post("/api/projects/:id/messages", isAuthenticated, async (req: any, res) => {
+  app.post("/api/projects/:id/messages", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -212,7 +240,7 @@ export async function registerRoutes(
   });
 
   // Get project files
-  app.get("/api/projects/:id/files", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects/:id/files", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -237,7 +265,7 @@ export async function registerRoutes(
   });
 
   // Get project invoices
-  app.get("/api/projects/:id/invoices", isAuthenticated, async (req: any, res) => {
+  app.get("/api/projects/:id/invoices", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -264,7 +292,7 @@ export async function registerRoutes(
   // ADMIN ROUTES
 
   // Get all projects (staff only)
-  app.get("/api/admin/projects", isAuthenticated, async (req: any, res) => {
+  app.get("/api/admin/projects", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -283,7 +311,7 @@ export async function registerRoutes(
   });
 
   // Create project (staff only)
-  app.post("/api/admin/projects", isAuthenticated, async (req: any, res) => {
+  app.post("/api/admin/projects", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -315,7 +343,7 @@ export async function registerRoutes(
   });
 
   // Update project (staff only)
-  app.patch("/api/admin/projects/:id", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/admin/projects/:id", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -347,7 +375,7 @@ export async function registerRoutes(
   });
 
   // Create milestone (staff only)
-  app.post("/api/admin/projects/:id/milestones", isAuthenticated, async (req: any, res) => {
+  app.post("/api/admin/projects/:id/milestones", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -379,7 +407,7 @@ export async function registerRoutes(
   });
 
   // Create preview (staff only)
-  app.post("/api/admin/projects/:id/previews", isAuthenticated, async (req: any, res) => {
+  app.post("/api/admin/projects/:id/previews", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -411,7 +439,7 @@ export async function registerRoutes(
   });
 
   // Update preview status (both client and staff)
-  app.patch("/api/projects/:projectId/previews/:previewId", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/projects/:projectId/previews/:previewId", requireAuth, async (req: any, res) => {
     try {
       const userId = getUserId(req);
       if (!userId) return res.status(401).json({ message: "Unauthorized" });

@@ -22,7 +22,7 @@ export default function AdminClients() {
             </div>
             <h3 className="font-heading font-semibold text-lg mb-2">Client Management</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Client management features will be available in the Wix Studio implementation using Wix Members.
+              View and manage all client accounts, roles, and permissions. Full client management UI coming soon.
             </p>
           </CardContent>
         </Card>

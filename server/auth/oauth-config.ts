@@ -17,6 +17,7 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 // Serialize user to session
 passport.serializeUser((user: any, done) => {
+  // Store user ID in session
   done(null, user.id);
 });
 

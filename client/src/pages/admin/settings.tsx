@@ -22,7 +22,7 @@ export default function AdminSettings() {
             </div>
             <h3 className="font-heading font-semibold text-lg mb-2">Platform Settings</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Platform settings will be configured through Wix Studio Dashboard in the production environment.
+              Configure platform settings, integrations, OAuth providers, and system preferences. Full settings UI coming soon.
             </p>
           </CardContent>
         </Card>
