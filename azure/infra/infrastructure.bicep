@@ -72,6 +72,95 @@ resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/container
   }
 }
 
+// Application Insights for monitoring and analytics
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${projectName}-insights-${envName}'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    RetentionInDays: 90
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+}
+
+// Log Analytics Workspace for Application Insights
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: '${projectName}-logs-${envName}'
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+}
+
+// Azure Communication Services for email notifications
+resource communicationService 'Microsoft.Communication/communicationServices@2023-04-01' = {
+  name: '${projectName}-comms-${envName}'
+  location: 'global'
+  properties: {
+    dataLocation: 'United States'
+  }
+}
+
+// Email Communication Service
+resource emailService 'Microsoft.Communication/emailServices@2023-04-01' = {
+  name: '${projectName}-email-${envName}'
+  location: 'global'
+  properties: {
+    dataLocation: 'United States'
+  }
+}
+
+// Email Domain (AzureManagedDomain)
+resource emailDomain 'Microsoft.Communication/emailServices/domains@2023-04-01' = {
+  parent: emailService
+  name: 'AzureManagedDomain'
+  location: 'global'
+  properties: {
+    domainManagement: 'AzureManaged'
+  }
+}
+
+// Link email domain to communication service
+resource emailConnection 'Microsoft.Communication/communicationServices/domains@2023-04-01' = {
+  parent: communicationService
+  name: emailDomain.name
+  location: 'global'
+  properties: {
+    domainManagement: 'AzureManaged'
+  }
+}
+
+// SignalR Service for real-time messaging
+resource signalRService 'Microsoft.SignalRService/signalR@2023-02-01' = {
+  name: '${projectName}-signalr-${envName}'
+  location: location
+  sku: {
+    name: 'Free_F1'
+    tier: 'Free'
+    capacity: 1
+  }
+  kind: 'SignalR'
+  properties: {
+    features: [
+      {
+        flag: 'ServiceMode'
+        value: 'Default'
+      }
+    ]
+    cors: {
+      allowedOrigins: [
+        'https://${staticWebAppName}.azurestaticapps.net'
+        'http://localhost:3000'
+      ]
+    }
+  }
+}
+
 // App Service Plan for backend API
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: appServicePlanName
@@ -129,6 +218,22 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
           name: 'FRONTEND_URL'
           value: 'https://${staticWebAppName}.azurestaticapps.net'
         }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+        {
+          name: 'AZURE_COMMUNICATION_EMAIL_CONNECTION_STRING'
+          value: 'endpoint=https://${communicationService.name}.communication.azure.com/;accesskey=${listKeys(communicationService.id, communicationService.apiVersion).primaryKey}'
+        }
+        {
+          name: 'AZURE_COMMUNICATION_EMAIL_SENDER'
+          value: 'DoNotReply@${emailDomain.properties.mailFromSenderDomain}'
+        }
+        {
+          name: 'AZURE_SIGNALR_CONNECTION_STRING'
+          value: 'Endpoint=https://${signalRService.name}.service.signalr.net;AccessKey=${listKeys(signalRService.id, signalRService.apiVersion).primaryKey};Version=1.0;'
+        }
       ]
     }
     httpsOnly: true
@@ -162,3 +267,7 @@ output databaseName string = sqlDatabase.name
 output storageAccountName string = storageAccount.name
 output staticWebAppName string = staticWebApp.name
 output appServiceName string = appService.name
+output appInsightsConnectionString string = appInsights.properties.ConnectionString
+output communicationServiceConnectionString string = 'endpoint=https://${communicationService.name}.communication.azure.com/;accesskey=${listKeys(communicationService.id, communicationService.apiVersion).primaryKey}'
+output signalRConnectionString string = 'Endpoint=https://${signalRService.name}.service.signalr.net;AccessKey=${listKeys(signalRService.id, signalRService.apiVersion).primaryKey};Version=1.0;'
+output emailSender string = 'DoNotReply@${emailDomain.properties.mailFromSenderDomain}'

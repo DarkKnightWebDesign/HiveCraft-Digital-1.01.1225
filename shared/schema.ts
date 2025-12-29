@@ -19,7 +19,7 @@ export const memberRoleEnum = pgEnum("member_role", ["client", "admin", "project
 // Member Roles - extends user with role information
 export const memberRoles = pgTable("member_roles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
+  userId: varchar("user_id").notNull().unique(), // Add unique constraint
   role: memberRoleEnum("role").notNull().default("client"),
   createdAt: timestamp("created_at").defaultNow(),
 });
