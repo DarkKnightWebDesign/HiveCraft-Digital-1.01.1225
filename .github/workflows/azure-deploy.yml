@@ -40,41 +40,12 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy infrastructure
-        uses: azure/arm-deploy@v1
-        with:
-          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
-          template: ./azure/infra/infrastructure.bicep
-          parameters: >
-            envName=prod
-            location=${{ env.AZURE_LOCATION }}
-            sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}
-          deploymentName: hivecraft-deployment-${{ github.run_number }}
-
-      - name: Get deployment outputs
-        id: bicep-outputs
-        run: |
-          API_NAME=$(az deployment group show \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name hivecraft-deployment-${{ github.run_number }} \
-            --query properties.outputs.appServiceName.value -o tsv)
-          
-          WEB_NAME=$(az deployment group show \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --name hivecraft-deployment-${{ github.run_number }} \
-            --query properties.outputs.staticWebAppName.value -o tsv)
-          
-          echo "API_NAME=$API_NAME" >> $GITHUB_OUTPUT
-          echo "WEB_NAME=$WEB_NAME" >> $GITHUB_OUTPUT
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy backend to App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ steps.bicep-outputs.outputs.API_NAME }}
+          app-name: hivecraft-api-prod-vcy525
           package: .
 
       - name: Deploy frontend to Static Web App
@@ -85,12 +56,23 @@ jobs:
           action: 'upload'
           app_location: 'client'
           api_location: ''
-          output_location: 'dist'
+          output_location: 'dist/public'
+          skip_app_build: true
 
-      - name: Run database migrations
-        run: npm run db:push
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Configure App Service settings
+        run: |
+          az webapp config appsettings set \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name hivecraft-api-prod-vcy525 \
+            --settings \
+              NODE_ENV=production \
+              DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
+              GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              BASE_URL="https://hivecraft-api-prod-vcy525.azurewebsites.net" \
+              FRONTEND_URL="https://purple-desert-0bf24bf0f.2.azurestaticapps.net" \
+            --output none
 
       - name: Azure Logout
         run: az logout
