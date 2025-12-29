@@ -96,8 +96,10 @@ export const previews = pgTable("previews", {
 export const files = pgTable("files", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   projectId: varchar("project_id").notNull(),
+  milestoneId: varchar("milestone_id"), // Optional link to milestone
   uploadedByMemberId: varchar("uploaded_by_member_id").notNull(),
   fileUrl: text("file_url").notNull(),
+  blobName: text("blob_name").notNull(), // Azure blob storage reference
   fileName: text("file_name").notNull(),
   fileType: text("file_type").notNull(),
   fileSize: integer("file_size"),

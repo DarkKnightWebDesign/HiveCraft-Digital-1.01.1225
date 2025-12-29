@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import authRoutes from "./auth/routes";
+import projectsRouter from "./routes/projects";
 import { requireAuth } from "./auth/email-auth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -45,6 +46,9 @@ export async function registerRoutes(
   
   // Auth routes (email/password + OAuth)
   app.use("/api", authRoutes);
+  
+  // Projects routes (full CRUD with files and messages)
+  app.use("/api/projects", projectsRouter);
 
   // Helper to get current user ID from session
   const getUserId = (req: any): string | null => {
