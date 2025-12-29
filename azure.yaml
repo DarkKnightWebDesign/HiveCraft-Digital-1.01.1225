@@ -1,14 +1,24 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: hivecraft-backend
+name: hivecraft
 metadata:
-  template: hivecraft-backend
+  template: hivecraft-fullstack
 
 infra:
   path: azure/infra
+  module: infrastructure
 
 services:
-  web:
+  # Backend API (Express/Node.js)
+  api:
     project: .
     language: ts
-    host: containerapp
+    host: appservice
+    dist: .
+    
+  # Frontend (React SPA)
+  web:
+    project: ./client
+    language: ts
+    host: staticwebapp
+    dist: dist

@@ -2,25 +2,67 @@
 
 ## Overview
 
-HiveCraft Digital is a web design and development agency platform with three main areas:
+HiveCraft Digital is a full-stack web design and development agency platform built with Azure-first architecture. The platform consists of three main areas:
 
-1. **Marketing Website** - Public pages showcasing services
-2. **Client Portal** - Authenticated area for clients to track their projects
-3. **Staff Back Office** - Admin dashboard for team members
+1. **Marketing Website** - Public pages showcasing services, pricing, and portfolio
+2. **Client Portal** - Authenticated area for clients to track projects, view milestones, upload files
+3. **Staff Back Office** - Admin dashboard for team members to manage all projects and clients
+
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         Users                               │
+│  (Clients, Staff, Public)                                  │
+└────────────┬────────────────────────────────────────────────┘
+             │
+             ├─────────────┐
+             │             │
+┌────────────▼───┐    ┌────▼─────────────────────────────────┐
+│  Static Web    │    │  App Service (Backend API)           │
+│  App (React)   │◄───┤  - Express.js REST API               │
+│  - Marketing   │    │  - OAuth authentication              │
+│  - Client UI   │    │  - Project management                │
+│  - Admin UI    │    │  - File upload handlers              │
+└────────────────┘    └─────┬────────────────────────────────┘
+                            │
+              ┌─────────────┼─────────────┐
+              │             │             │
+      ┌───────▼──────┐  ┌───▼─────┐  ┌───▼──────────────┐
+      │ Azure SQL    │  │ Blob    │  │ Communication    │
+      │ (PostgreSQL) │  │ Storage │  │ Services (SMS)   │
+      │ - Users      │  │ - Files │  │ - Verification   │
+      │ - Projects   │  │ - Images│  │ (optional)       │
+      │ - Sessions   │  │         │  │                  │
+      └──────────────┘  └─────────┘  └──────────────────┘
+```
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React 18 + TypeScript + Vite |
-| Routing | wouter |
-| State | TanStack Query v5 |
-| UI Components | shadcn/ui (Radix primitives) |
-| Styling | Tailwind CSS |
-| Backend | Express.js + Node.js |
-| Database | PostgreSQL + Drizzle ORM |
-| Auth | Replit Auth (OpenID Connect) |
-| Sessions | express-session + connect-pg-simple |
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | | |
+| Framework | React 18 + TypeScript | Component-based UI |
+| Build Tool | Vite | Fast dev server and bundling |
+| Routing | wouter | Lightweight SPA routing |
+| State | TanStack Query v5 | Server state & caching |
+| UI Library | shadcn/ui | Accessible components |
+| Styling | Tailwind CSS | Utility-first styling |
+| **Backend** | | |
+| Runtime | Node.js 20 | Server runtime |
+| Framework | Express.js | REST API framework |
+| Database ORM | Drizzle ORM | Type-safe database queries |
+| **Authentication** | | |
+| OAuth | Passport.js | OAuth 2.0 strategies |
+| Social Login | Google, Facebook, GitHub | Third-party authentication |
+| Sessions | express-session | PostgreSQL session store |
+| Password | bcrypt | Secure password hashing |
+| **Azure Services** | | |
+| Frontend Host | Static Web Apps | Global CDN, auto-scaling |
+| Backend Host | App Service | Managed Node.js hosting |
+| Database | Azure SQL (PostgreSQL) | Managed database |
+| File Storage | Blob Storage | Object storage for uploads |
+| SMS (optional) | Communication Services | Phone verification |
 
 ## Directory Structure
 
@@ -32,22 +74,40 @@ HiveCraft Digital is a web design and development agency platform with three mai
 │   │   │   ├── portal/        # Portal layouts (client + staff)
 │   │   │   └── ui/            # shadcn/ui base components
 │   │   ├── hooks/             # Custom hooks (use-auth, use-toast, use-mobile)
-│   │   ├── lib/               # Utilities (queryClient, utils)
+│   │   ├── lib/               # Utilities (queryClient, utils, auth-utils)
 │   │   └── pages/
-│   │       ├── marketing/     # Public pages (home, services, pricing, etc.)
-│   │       └── portal/        # Authenticated pages (dashboard, projects)
+│   │       ├── admin/         # Staff back office pages
+│   │       ├── portal/        # Client portal pages
+│   │       └── (marketing)    # Public pages (home, services, pricing)
 ├── server/
 │   ├── index.ts               # Server entry point
-│   ├── routes.ts              # All API endpoints
-│   ├── storage.ts             # Database operations interface
-│   ├── auth.ts                # Replit Auth setup
+│   ├── routes.ts              # Main routes registration
+│   ├── routes/
+│   │   └── projects.ts        # Project management API
+│   ├── auth/
+│   │   ├── oauth-config.ts    # Passport OAuth strategies
+│   │   ├── routes.ts          # OAuth callback routes
+│   │   ├── email-auth.ts      # Email/password middleware
+│   │   └── sms-service.ts     # Azure SMS integration
+│   ├── storage/
+│   │   └── azure-blob.ts      # Azure Blob Storage service
+│   ├── storage.ts             # Database operations
 │   └── vite.ts                # Vite dev server integration
 ├── shared/
-│   └── schema.ts              # Drizzle schema + types (single source of truth)
+│   ├── schema.ts              # Drizzle schema (single source of truth)
+│   └── models/
+│       └── auth.ts            # User and session types
+├── azure/
+│   ├── infra/
+│   │   └── infrastructure.bicep    # Azure infrastructure (IaC)
+│   └── db/migrations/              # SQL migration scripts
+├── .github/workflows/
+│   └── azure-deploy.yml            # CI/CD pipeline
 └── docs/
     ├── ARCHITECTURE.md        # This file
-    ├── WORKFLOW.md            # How to run/test/deploy
-    ├── CHANGELOG.md           # Change history
+    ├── AUTH_SETUP.md          # Authentication setup guide
+    ├── OAUTH_SMS_IMPLEMENTATION.md
+    └── AUTH_QUICK_REFERENCE.md
     ├── TASKS.md               # Current TODOs
     └── wix-studio-migration/  # Wix Studio transfer guide
 ```
